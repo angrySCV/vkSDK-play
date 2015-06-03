@@ -1,6 +1,5 @@
 package vk.model;
 
-import org.json.JSONException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
@@ -9,8 +8,8 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public class VKApiCommunityArray extends VKList<VKApiCommunityFull> {
     @Override
-    public VKApiModel parse(JsonNode response) throws JSONException {
-        fill(response, VKApiCommunityFull.class);
+    public VKApiModel parse(JsonNode response) {
+//        fill(response, VKApiCommunityFull.class);
         return this;
     }
 }

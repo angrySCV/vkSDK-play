@@ -22,12 +22,10 @@
 package vk.model;
 
 
-import android.os.Parcelable;
 
-import org.json.JSONException;
+
+
 import com.fasterxml.jackson.databind.JsonNode;
-
-import static android.text.TextUtils.isEmpty;
 
 /**
  * A school object describes a school.
@@ -80,7 +78,7 @@ public class VKApiSchool extends VKApiModel implements Identifiable {
      */
     public String speciality;
 
-	public VKApiSchool(JsonNode from) throws JSONException
+	public VKApiSchool(JsonNode from)
 	{
 		parse(from);
 	}
@@ -88,32 +86,19 @@ public class VKApiSchool extends VKApiModel implements Identifiable {
      * Fills a School instance from JsonNode.
      */
     public VKApiSchool parse(JsonNode from) {
-        id = from.optInt("id");
-        country_id = from.optInt("country_id");
-        city_id = from.optInt("city_id");
-        name = from.optString("name");
-        year_from = from.optInt("year_from");
-        year_to = from.optInt("year_to");
-        year_graduated = from.optInt("year_graduated");
-        clazz = from.optString("class");
-        speciality = from.optString("speciality");
+        id = from.get("id").asInt();
+        country_id = from.get("country_id").asInt();
+        city_id = from.get("city_id").asInt();
+        name = from.get("name").asText();
+        year_from = from.get("year_from").asInt();
+        year_to = from.get("year_to").asInt();
+        year_graduated = from.get("year_graduated").asInt();
+        clazz = from.get("class").asText();
+        speciality = from.get("speciality").asText();
         return this;
     }
 
-    /**
-     * Creates a School instance from Parcel.
-     */
-    public VKApiSchool(Parcel in) {
-        this.id = in.readInt();
-        this.country_id = in.readInt();
-        this.city_id = in.readInt();
-        this.name = in.readString();
-        this.year_from = in.readInt();
-        this.year_to = in.readInt();
-        this.year_graduated = in.readInt();
-        this.clazz = in.readString();
-        this.speciality = in.readString();
-    }
+
 
     /**
      * Creates empty School instance.
@@ -143,12 +128,12 @@ public class VKApiSchool extends VKApiModel implements Identifiable {
                 builder.append('-');
                 builder.append(year_to);
             }
-            if(!isEmpty(clazz)) {
+            if(clazz!=null) {
                 builder.append('(');
                 builder.append(clazz);
                 builder.append(')');
             }
-            if(!isEmpty(speciality)) {
+            if(speciality!=null) {
                 builder.append(", ");
                 builder.append(speciality);
             }
@@ -157,32 +142,11 @@ public class VKApiSchool extends VKApiModel implements Identifiable {
         return fullName;
     }
 
-    @Override
+
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
-        dest.writeInt(this.country_id);
-        dest.writeInt(this.city_id);
-        dest.writeString(this.name);
-        dest.writeInt(this.year_from);
-        dest.writeInt(this.year_to);
-        dest.writeInt(this.year_graduated);
-        dest.writeString(this.clazz);
-        dest.writeString(this.speciality);
-    }
 
-    public static Creator<VKApiSchool> CREATOR = new Creator<VKApiSchool>() {
-        public VKApiSchool createFromParcel(Parcel source) {
-            return new VKApiSchool(source);
-        }
-
-        public VKApiSchool[] newArray(int size) {
-            return new VKApiSchool[size];
-        }
-    };
 
 }

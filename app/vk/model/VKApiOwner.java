@@ -30,7 +30,6 @@ package vk.model;
 
 
 
-import org.json.JSONException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
@@ -52,7 +51,7 @@ public class VKApiOwner extends VKApiModel implements Identifiable {
     public VKApiOwner() {
 
     }
-	public VKApiOwner(JsonNode from) throws JSONException
+	public VKApiOwner(JsonNode from)
 	{
 		parse(from);
 	}
@@ -61,7 +60,7 @@ public class VKApiOwner extends VKApiModel implements Identifiable {
      */
     public VKApiOwner parse(JsonNode from) {
         fields = from;
-        id = from.optInt("id");
+        id = from.get("id").asInt();
         return this;
     }
 
@@ -72,35 +71,16 @@ public class VKApiOwner extends VKApiModel implements Identifiable {
         this.id = id;
     }
 
-    /**
-     * Creates an owner from Parcel.
-     */
-    public VKApiOwner(Parcel in) {
-        this.id = in.readInt();
-    }
+
 
     @Override
     public int getId() {
         return id;
     }
 
-    @Override
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
-    }
 
-    public static Creator<VKApiOwner> CREATOR = new Creator<VKApiOwner>() {
-        public VKApiOwner createFromParcel(Parcel source) {
-            return new VKApiOwner(source);
-        }
-
-        public VKApiOwner[] newArray(int size) {
-            return new VKApiOwner[size];
-        }
-    };
 }

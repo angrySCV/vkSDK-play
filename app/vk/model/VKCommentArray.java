@@ -21,7 +21,7 @@
 
 package vk.model;
 
-import org.json.JSONException;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public class VKCommentArray extends VKList<VKApiComment> {
     @Override
-    public VKApiModel parse(JsonNode response) throws JSONException {
+    public VKApiModel parse(JsonNode response)  {
         fill(response, VKApiComment.class);
         return this;
     }

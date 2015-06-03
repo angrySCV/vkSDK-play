@@ -31,7 +31,7 @@ package vk.model;
 
 
 
-import org.json.JSONException;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
@@ -68,7 +68,7 @@ public class VKApiUser extends VKApiOwner  {
     /**
      * All required for fill all fields.
      */
-    public final static String FIELDS_DEFAULT = TextUtils.join(",", new String[]{FIELD_ONLINE, FIELD_ONLINE_MOBILE, FIELD_PHOTO_50, FIELD_PHOTO_100, FIELD_PHOTO_200});
+//    public final static String FIELDS_DEFAULT = TextUtils.join(",", new String[]{FIELD_ONLINE, FIELD_ONLINE_MOBILE, FIELD_PHOTO_50, FIELD_PHOTO_100, FIELD_PHOTO_200});
 
     /**
      * First name of user.
@@ -110,7 +110,7 @@ public class VKApiUser extends VKApiOwner  {
      */
     public VKPhotoSizes photo = new VKPhotoSizes();
 
-	public VKApiUser(JsonNode from) throws JSONException
+	public VKApiUser(JsonNode from)
 	{
 		parse(from);
 	}
@@ -119,42 +119,28 @@ public class VKApiUser extends VKApiOwner  {
      */
     public VKApiUser parse(JsonNode from) {
         super.parse(from);
-        first_name = from.optString("first_name", first_name);
-        last_name = from.optString("last_name", last_name);
-        online = ParseUtils.parseBoolean(from, FIELD_ONLINE);
-        online_mobile = ParseUtils.parseBoolean(from, FIELD_ONLINE_MOBILE);
+        first_name = from.get("first_name").asText();
+        last_name = from.get("last_name").asText();
+        online = from.get(FIELD_ONLINE).asBoolean();
+        online_mobile = from.get(FIELD_ONLINE_MOBILE).asBoolean();
 
-        photo_50 = from.optString(FIELD_PHOTO_50, photo_50);
-        if(!TextUtils.isEmpty(photo_50)) {
+        photo_50 = from.get(FIELD_PHOTO_50).asText();
+        if(photo_50!=null) {
             photo.add(VKApiPhotoSize.create(photo_50, 50));
         }
-        photo_100 = from.optString(FIELD_PHOTO_100, photo_100);
-        if(!TextUtils.isEmpty(photo_100)) {
+        photo_100 = from.get(FIELD_PHOTO_100).asText();
+        if(photo_100!=null) {
             photo.add(VKApiPhotoSize.create(photo_100, 100));
         }
-        photo_200 = from.optString(FIELD_PHOTO_200, null);
-        if(!TextUtils.isEmpty(photo_200)) {
+        photo_200 = from.get(FIELD_PHOTO_200).asText();
+        if(photo_200!=null) {
             photo.add(VKApiPhotoSize.create(photo_200, 200));
         }
         photo.sort();
         return this;
     }
 
-    /**
-     * Creates an User instance from Parcel.
-     */
-    public VKApiUser(Parcel in) {
-        super(in);
-        this.first_name = in.readString();
-        this.last_name = in.readString();
-        this.online = in.readByte() != 0;
-        this.online_mobile = in.readByte() != 0;
-        this.photo_50 = in.readString();
-        this.photo_100 = in.readString();
-        this.photo_200 = in.readString();
-        this.photo = in.readParcelable(VKPhotoSizes.class.getClassLoader());
-        this.full_name = in.readString();
-    }
+
 
     /**
      * Creates empty User instance.
@@ -176,32 +162,9 @@ public class VKApiUser extends VKApiOwner  {
         return full_name;
     }
 
-    @Override
+
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeString(this.first_name);
-        dest.writeString(this.last_name);
-        dest.writeByte(online ? (byte) 1 : (byte) 0);
-        dest.writeByte(online_mobile ? (byte) 1 : (byte) 0);
-        dest.writeString(this.photo_50);
-        dest.writeString(this.photo_100);
-        dest.writeString(this.photo_200);
-        dest.writeParcelable(this.photo, flags);
-        dest.writeString(this.full_name);
-    }
-
-    public static Creator<VKApiUser> CREATOR = new Creator<VKApiUser>() {
-        public VKApiUser createFromParcel(Parcel source) {
-            return new VKApiUser(source);
-        }
-
-        public VKApiUser[] newArray(int size) {
-            return new VKApiUser[size];
-        }
-    };
 }

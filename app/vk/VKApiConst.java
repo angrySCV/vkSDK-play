@@ -28,6 +28,7 @@ public class VKApiConst {
     //usual data
     public final static String API_URL     = "https://api.vk.com/method/";
     public final static String API_VERSION = "5.33";
+    public final static boolean DEBUG = false;
 
 
     //Commons

@@ -22,7 +22,6 @@
 package vk.model;
 
 
-import android.os.Parcelable;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
@@ -48,18 +47,12 @@ public class VKApiCity extends VKApiModel implements Identifiable {
      * Fills a City instance from JsonNode.
      */
     public VKApiCity parse(JsonNode from) {
-        id = from.optInt("id");
-        title = from.optString("title");
+        id = from.get("id").asInt();
+        title = from.get("title").asText();
         return this;
     }
 
-    /**
-     * Creates a City instance from Parcel.
-     */
-    public VKApiCity(Parcel in) {
-        this.id = in.readInt();
-        this.title = in.readString();
-    }
+
 
     /**
      * Creates empty City instance.
@@ -78,25 +71,11 @@ public class VKApiCity extends VKApiModel implements Identifiable {
         return title;
     }
 
-    @Override
+
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
-        dest.writeString(this.title);
-    }
 
-    public static Creator<VKApiCity> CREATOR = new Creator<VKApiCity>() {
-        public VKApiCity createFromParcel(Parcel source) {
-            return new VKApiCity(source);
-        }
-
-        public VKApiCity[] newArray(int size) {
-            return new VKApiCity[size];
-        }
-    };
 
 }

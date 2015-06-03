@@ -29,7 +29,6 @@
 package vk.model;
 
 
-import org.json.JSONException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
@@ -93,44 +92,28 @@ public class VKApiMessage extends VKApiModel implements Identifiable {
      */
     public boolean deleted;
 
-	public VKApiMessage(JsonNode from) throws JSONException
+	public VKApiMessage(JsonNode from)
 	{
 		parse(from);
 	}
     /**
      * Fills a Message instance from JsonNode.
      */
-    public VKApiMessage parse(JsonNode source) throws JSONException {
-        id = source.optInt("id");
-        user_id = source.optInt("user_id");
-        date = source.optLong("date");
-        read_state = ParseUtils.parseBoolean(source, "read_state");
-        out = ParseUtils.parseBoolean(source, "out");
-        title = source.optString("title");
-        body = source.optString("body");
-        attachments .fill(source.optJSONArray("attachments"));
-        fwd_messages = new VKList<VKApiMessage>(source.optJSONArray("fwd_messages"), VKApiMessage.class);
-        emoji = ParseUtils.parseBoolean(source, "emoji");
-        deleted = ParseUtils.parseBoolean(source, "deleted");
+    public VKApiMessage parse(JsonNode source) {
+        id = source.get("id").asInt();
+        user_id = source.get("user_id").asInt();
+        date = source.get("date").asLong();
+        read_state = source.get("read_state").asBoolean();
+        out = source.get("out").asBoolean();
+        title = source.get("title").asText();
+        body = source.get("body").asText();
+//        attachments .fill(source.get("attachments"));
+//        fwd_messages = new VKList<VKApiMessage>(source.optJsonNode("fwd_messages"), VKApiMessage.class);
+        emoji = source.get("emoji").asBoolean();
+        deleted = source.get("deleted").asBoolean();
         return this;
     }
 
-    /**
-     * Creates a Message instance from Parcel.
-     */
-    public VKApiMessage(Parcel in) {
-        this.id = in.readInt();
-        this.user_id = in.readInt();
-        this.date = in.readLong();
-        this.read_state = in.readByte() != 0;
-        this.out = in.readByte() != 0;
-        this.title = in.readString();
-        this.body = in.readString();
-        this.attachments = in.readParcelable(VKAttachments.class.getClassLoader());
-        this.fwd_messages = in.readParcelable(VKList.class.getClassLoader());
-        this.emoji = in.readByte() != 0;
-        this.deleted = in.readByte() != 0;
-    }
 
     /**
      * Creates empty Country instance.
@@ -144,33 +127,9 @@ public class VKApiMessage extends VKApiModel implements Identifiable {
         return id;
     }
 
-    @Override
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
-        dest.writeInt(this.user_id);
-        dest.writeLong(this.date);
-        dest.writeByte(read_state ? (byte) 1 : (byte) 0);
-        dest.writeByte(out ? (byte) 1 : (byte) 0);
-        dest.writeString(this.title);
-        dest.writeString(this.body);
-        dest.writeParcelable(attachments, flags);
-        dest.writeParcelable(this.fwd_messages, flags);
-        dest.writeByte(emoji ? (byte) 1 : (byte) 0);
-        dest.writeByte(deleted ? (byte) 1 : (byte) 0);
-    }
 
-    public static Creator<VKApiMessage> CREATOR = new Creator<VKApiMessage>() {
-        public VKApiMessage createFromParcel(Parcel source) {
-            return new VKApiMessage(source);
-        }
-
-        public VKApiMessage[] newArray(int size) {
-            return new VKApiMessage[size];
-        }
-    };
 }

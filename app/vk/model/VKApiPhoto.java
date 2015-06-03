@@ -22,15 +22,9 @@
 package vk.model;
 
 
-import android.os.Parcelable;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import static vk.model.ParseUtils.parseBoolean;
-import static vk.model.ParseUtils.parseInt;
-import static vk.model.VKAttachments.*;
+import static vk.model.VKAttachments.TYPE_PHOTO;
 
 /**
  * Describes a photo object from VK.
@@ -138,7 +132,7 @@ public class VKApiPhoto extends VKAttachments.VKApiAttachment implements Identif
      */
     public String access_key;
 
-	public VKApiPhoto(JsonNode from) throws JSONException
+	public VKApiPhoto(JsonNode from)
 	{
 		parse(from);
 	}
@@ -146,50 +140,50 @@ public class VKApiPhoto extends VKAttachments.VKApiAttachment implements Identif
      * Fills a Photo instance from JsonNode.
      */
     public VKApiPhoto parse(JsonNode from) {
-        album_id = from.optInt("album_id");
-        date = from.optLong("date");
-        height = from.optInt("height");
-        width = from.optInt("width");
-        owner_id = from.optInt("owner_id");
-        id = from.optInt("id");
-        text = from.optString("text");
-        access_key = from.optString("access_key");
+        album_id = from.get("album_id").asInt();
+        date = from.get("date").asLong();
+        height = from.get("height").asInt();
+        width = from.get("width").asInt();
+        owner_id = from.get("owner_id").asInt();
+        id = from.get("id").asInt();
+        text = from.get("text").asText();
+        access_key = from.get("access_key").asText();
 
-        photo_75 = from.optString("photo_75");
-        photo_130 = from.optString("photo_130");
-        photo_604 = from.optString("photo_604");
-        photo_807 = from.optString("photo_807");
-        photo_1280 = from.optString("photo_1280");
-        photo_2560 = from.optString("photo_2560");
+        photo_75 = from.get("photo_75").asText();
+        photo_130 = from.get("photo_130").asText();
+        photo_604 = from.get("photo_604").asText();
+        photo_807 = from.get("photo_807").asText();
+        photo_1280 = from.get("photo_1280").asText();
+        photo_2560 = from.get("photo_2560").asText();
 
-        JsonNode likes = from.optJsonNode("likes");
-        this.likes = ParseUtils.parseInt(likes, "count");
-        this.user_likes = ParseUtils.parseBoolean(likes, "user_likes");
-        comments = parseInt(from.optJsonNode("comments"), "count");
-        tags = parseInt(from.optJsonNode("tags"), "count");
-        can_comment = parseBoolean(from, "can_comment");
+        JsonNode likes = from.get("likes");
+        this.likes = likes.get("count").asInt();
+        this.user_likes = likes.get("user_likes").asBoolean();
+        comments = from.get("comments").get("count").asInt();
+        tags = from.get("tags").get("count").asInt();
+        can_comment = from.get("can_comment").asBoolean();
 
         src.setOriginalDimension(width, height);
-        JSONArray photo_sizes = from.optJSONArray("sizes");
+        JsonNode photo_sizes = from.get("sizes");
         if(photo_sizes != null) {
             src.fill(photo_sizes);
         } else {
-            if(!TextUtils.isEmpty(photo_75)) {
+            if(photo_75!=null) {
                 src.add(VKApiPhotoSize.create(photo_75, VKApiPhotoSize.S, width, height));
             }
-            if(!TextUtils.isEmpty(photo_130)) {
+            if(photo_130!=null) {
                 src.add(VKApiPhotoSize.create(photo_130, VKApiPhotoSize.M, width, height));
             }
-            if(!TextUtils.isEmpty(photo_604)) {
+            if(photo_604!=null) {
                 src.add(VKApiPhotoSize.create(photo_604, VKApiPhotoSize.X, width, height));
             }
-            if(!TextUtils.isEmpty(photo_807)) {
+            if(photo_807!=null) {
                 src.add(VKApiPhotoSize.create(photo_807, VKApiPhotoSize.Y, width, height));
             }
-            if(!TextUtils.isEmpty(photo_1280)) {
+            if(photo_1280!=null) {
                 src.add(VKApiPhotoSize.create(photo_1280, VKApiPhotoSize.Z, width, height));
             }
-            if(!TextUtils.isEmpty(photo_2560)) {
+            if(photo_2560!=null) {
                 src.add(VKApiPhotoSize.create(photo_2560, VKApiPhotoSize.W, width, height));
             }
             src.sort();
@@ -197,31 +191,7 @@ public class VKApiPhoto extends VKAttachments.VKApiAttachment implements Identif
         return this;
     }
 
-    /**
-     * Creates a Photo instance from Parcel.
-     */
-    public VKApiPhoto(Parcel in) {
-        this.id = in.readInt();
-        this.album_id = in.readInt();
-        this.owner_id = in.readInt();
-        this.width = in.readInt();
-        this.height = in.readInt();
-        this.text = in.readString();
-        this.date = in.readLong();
-        this.src = in.readParcelable(VKPhotoSizes.class.getClassLoader());
-        this.photo_75 = in.readString();
-        this.photo_130 = in.readString();
-        this.photo_604 = in.readString();
-        this.photo_807 = in.readString();
-        this.photo_1280 = in.readString();
-        this.photo_2560 = in.readString();
-        this.user_likes = in.readByte() != 0;
-        this.can_comment = in.readByte() != 0;
-        this.likes = in.readInt();
-        this.comments = in.readInt();
-        this.tags = in.readInt();
-        this.access_key = in.readString();
-    }
+
 
     /**
      * Init photo object with attachment string like photo45898586_334180483
@@ -251,7 +221,7 @@ public class VKApiPhoto extends VKAttachments.VKApiAttachment implements Identif
     @Override
     public CharSequence toAttachmentString() {
         StringBuilder result = new StringBuilder(TYPE_PHOTO).append(owner_id).append('_').append(id);
-        if(!TextUtils.isEmpty(access_key)) {
+        if(access_key!=null) {
             result.append('_');
             result.append(access_key);
         }
@@ -263,43 +233,10 @@ public class VKApiPhoto extends VKAttachments.VKApiAttachment implements Identif
         return TYPE_PHOTO;
     }
 
-    @Override
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
-        dest.writeInt(this.album_id);
-        dest.writeInt(this.owner_id);
-        dest.writeInt(this.width);
-        dest.writeInt(this.height);
-        dest.writeString(this.text);
-        dest.writeLong(this.date);
-        dest.writeParcelable(this.src, flags);
-        dest.writeString(this.photo_75);
-        dest.writeString(this.photo_130);
-        dest.writeString(this.photo_604);
-        dest.writeString(this.photo_807);
-        dest.writeString(this.photo_1280);
-        dest.writeString(this.photo_2560);
-        dest.writeByte(user_likes ? (byte) 1 : (byte) 0);
-        dest.writeByte(can_comment ? (byte) 1 : (byte) 0);
-        dest.writeInt(this.likes);
-        dest.writeInt(this.comments);
-        dest.writeInt(this.tags);
-        dest.writeString(this.access_key);
-    }
 
-    public static Creator<VKApiPhoto> CREATOR = new Creator<VKApiPhoto>() {
-        public VKApiPhoto createFromParcel(Parcel source) {
-            return new VKApiPhoto(source);
-        }
-
-        public VKApiPhoto[] newArray(int size) {
-            return new VKApiPhoto[size];
-        }
-    };
 
 }

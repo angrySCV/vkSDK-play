@@ -20,14 +20,7 @@
 //
 
 package vk.model;
-
-
-import org.json.JSONArray;
-import org.json.JSONException;
 import com.fasterxml.jackson.databind.JsonNode;
-
-import static vk.model.ParseUtils.parseBoolean;
-import static vk.model.ParseUtils.parseLong;
 
 /**
  * Represents full user profile.
@@ -432,7 +425,7 @@ public class VKApiUserFull extends VKApiUser {
      */
     public boolean blacklisted_by_me;
 
-	public VKApiUserFull(JsonNode from) throws JSONException
+	public VKApiUserFull(JsonNode from)
 	{
 		parse(from);
 	}
@@ -440,96 +433,96 @@ public class VKApiUserFull extends VKApiUser {
         super.parse(user);
 
         // general
-        last_seen = parseLong(user.optJsonNode(LAST_SEEN), "time");
-        bdate = user.optString(BDATE);
+        last_seen = user.get(LAST_SEEN).asLong();
+        bdate = user.get(BDATE).asText();
 
-        JsonNode city = user.optJsonNode(CITY);
+        JsonNode city = user.get(CITY);
         if(city != null) {
             this.city = new VKApiCity().parse(city);
         }
-        JsonNode country = user.optJsonNode(COUNTRY);
+        JsonNode country = user.get(COUNTRY);
         if(country != null) {
             this.country = new VKApiCountry().parse(country);
         }
 
         // education
-        universities = new VKList<VKApiUniversity>(user.optJSONArray(UNIVERSITIES), VKApiUniversity.class);
-        schools = new VKList<VKApiSchool>(user.optJSONArray(SCHOOLS), VKApiSchool.class);
+//        universities = new VKList<VKApiUniversity>(user.get(UNIVERSITIES), VKApiUniversity.class);
+//        schools = new VKList<VKApiSchool>(user.get(SCHOOLS), VKApiSchool.class);
 
         // status
-        activity = user.optString(ACTIVITY);
+        activity = user.get(ACTIVITY).asText();
 
-        JsonNode status_audio = user.optJsonNode("status_audio");
+        JsonNode status_audio = user.get("status_audio");
         if(status_audio != null) this.status_audio = new VKApiAudio().parse(status_audio);
 
         // personal views
-        JsonNode personal = user.optJsonNode(PERSONAL);
+        JsonNode personal = user.get(PERSONAL);
         if (personal != null) {
-            smoking = personal.optInt("smoking");
-            alcohol = personal.optInt("alcohol");
-            political = personal.optInt("political");
-            life_main = personal.optInt("life_main");
-            people_main = personal.optInt("people_main");
-            inspired_by = personal.optString("inspired_by");
-            religion = personal.optString("religion");
+            smoking = personal.get("smoking").asInt();
+            alcohol = personal.get("alcohol").asInt();
+            political = personal.get("political").asInt();
+            life_main = personal.get("life_main").asInt();
+            people_main = personal.get("people_main").asInt();
+            inspired_by = personal.get("inspired_by").asText();
+            religion = personal.get("religion").asText();
             if (personal.has("langs")) {
-                JSONArray langs = personal.optJSONArray("langs");
+                JsonNode langs = personal.get("langs");
                 if (langs != null) {
-                    this.langs = new String[langs.length()];
-                    for (int i = 0; i < langs.length(); i++) {
-                        this.langs[i] = langs.optString(i);
+                    this.langs = new String[langs.size()];
+                    for (int i = 0; i < langs.size(); i++) {
+                        this.langs[i] = langs.get(i).asText();
                     }
                 }
             }
         }
 
         // contacts
-        facebook = user.optString("facebook");
-        facebook_name = user.optString("facebook_name");
-        livejournal = user.optString("livejournal");
-        site = user.optString(SITE);
-        screen_name = user.optString("screen_name", "id" + id);
-        skype = user.optString("skype");
-        mobile_phone = user.optString("mobile_phone");
-        home_phone = user.optString("home_phone");
-        twitter = user.optString("twitter");
-        instagram = user.optString("instagram");
+        facebook = user.get("facebook").asText();
+        facebook_name = user.get("facebook_name").asText();
+        livejournal = user.get("livejournal").asText();
+        site = user.get(SITE).asText();
+        screen_name = user.get("screen_name").asText();
+        skype = user.get("skype").asText();
+        mobile_phone = user.get("mobile_phone").asText();
+        home_phone = user.get("home_phone").asText();
+        twitter = user.get("twitter").asText();
+        instagram = user.get("instagram").asText();
 
         // personal info
-        about = user.optString(ABOUT);
-        activities = user.optString(ACTIVITIES);
-        books = user.optString(BOOKS);
-        games = user.optString(GAMES);
-        interests = user.optString(INTERESTS);
-        movies = user.optString(MOVIES);
-        quotes = user.optString(QUOTES);
-        tv = user.optString(TV);
+        about = user.get(ABOUT).asText();
+        activities = user.get(ACTIVITIES).asText();
+        books = user.get(BOOKS).asText();
+        games = user.get(GAMES).asText();
+        interests = user.get(INTERESTS).asText();
+        movies = user.get(MOVIES).asText();
+        quotes = user.get(QUOTES).asText();
+        tv = user.get(TV).asText();
 
         // settings
-        nickname = user.optString("nickname", null);
-        can_post = parseBoolean(user, CAN_POST);
-        can_see_all_posts = parseBoolean(user, CAN_SEE_ALL_POSTS);
-        blacklisted_by_me = parseBoolean(user, BLACKLISTED_BY_ME);
-        can_write_private_message = parseBoolean(user, CAN_WRITE_PRIVATE_MESSAGE);
-        wall_comments = parseBoolean(user, WALL_DEFAULT);
-        String deactivated = user.optString("deactivated");
+        nickname = user.get("nickname").asText();
+        can_post = user.get(CAN_POST).asBoolean();
+        can_see_all_posts = user.get(CAN_SEE_ALL_POSTS).asBoolean();
+        blacklisted_by_me = user.get(BLACKLISTED_BY_ME).asBoolean();
+        can_write_private_message = user.get(CAN_WRITE_PRIVATE_MESSAGE).asBoolean();
+        wall_comments = user.get(WALL_DEFAULT).asBoolean();
+        String deactivated = user.get("deactivated").asText();
         is_deleted = "deleted".equals(deactivated);
         is_banned = "banned".equals(deactivated);
-        wall_default_owner = "owner".equals(user.optString(WALL_DEFAULT));
-        verified = parseBoolean(user, VERIFIED);
+        wall_default_owner = "owner".equals(user.get(WALL_DEFAULT).asText());
+        verified = user.get(VERIFIED).asBoolean();
 
         // other
-        sex = user.optInt(SEX);
-        JsonNode counters = user.optJsonNode(COUNTERS);
+        sex = user.get(SEX).asInt();
+        JsonNode counters = user.get(COUNTERS);
         if (counters != null) this.counters = new Counters(counters);
 
-        relation = user.optInt(RELATION);
+        relation = user.get(RELATION).asInt();
 
         if (user.has(RELATIVES)) {
             if (relatives == null) {
                 relatives = new VKList<Relative>();
             }
-            relatives.fill(user.optJSONArray(RELATIVES), Relative.class);
+//            relatives.fill(user.get(RELATIVES), Relative.class);
         }
         return this;
     }
@@ -544,42 +537,21 @@ public class VKApiUserFull extends VKApiUser {
             return id;
         }
 
-        @Override
         public Relative parse(JsonNode response) {
-            id = response.optInt("id");
-            name = response.optString("name");
+            id = response.get("id").asInt();
+            name = response.get("name").asText();
             return this;
         }
 
 
-        @Override
         public int describeContents() {
             return 0;
         }
 
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(this.id);
-            dest.writeString(this.name);
-        }
 
-        private Relative(Parcel in) {
-            this.id = in.readInt();
-            this.name = in.readString();
-        }
-
-        public static Creator<Relative> CREATOR = new Creator<Relative>() {
-            public Relative createFromParcel(Parcel source) {
-                return new Relative(source);
-            }
-
-            public Relative[] newArray(int size) {
-                return new Relative[size];
-            }
-        };
     }
 
-    public static class Counters implements android.os.Parcelable {
+    public static class Counters {
         /**
          * Count was not in server response.
          */
@@ -600,69 +572,27 @@ public class VKApiUserFull extends VKApiUser {
         public int pages = NO_COUNTER;
 
         Counters(JsonNode counters) {
-            albums = counters.optInt("albums", albums);
-            audios = counters.optInt("audios", audios);
-            followers = counters.optInt("followers", followers);
-            photos = counters.optInt("photos", photos);
-            friends = counters.optInt("friends", friends);
-            groups = counters.optInt("groups", groups);
-            mutual_friends = counters.optInt("mutual_friends", mutual_friends);
-            notes = counters.optInt("notes", notes);
-            online_friends = counters.optInt("online_friends", online_friends);
-            user_videos = counters.optInt("user_videos", user_videos);
-            videos = counters.optInt("videos", videos);
-            subscriptions = counters.optInt("subscriptions", subscriptions);
-            pages = counters.optInt("pages", pages);
+            albums = counters.get("albums").asInt();
+            audios = counters.get("audios").asInt();
+            followers = counters.get("followers").asInt();
+            photos = counters.get("photos").asInt();
+            friends = counters.get("friends").asInt();
+            groups = counters.get("groups").asInt();
+            mutual_friends = counters.get("mutual_friends").asInt();
+            notes = counters.get("notes").asInt();
+            online_friends = counters.get("online_friends").asInt();
+            user_videos = counters.get("user_videos").asInt();
+            videos = counters.get("videos").asInt();
+            subscriptions = counters.get("subscriptions").asInt();
+            pages = counters.get("pages").asInt();
         }
 
 
-        @Override
         public int describeContents() {
             return 0;
         }
 
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(this.albums);
-            dest.writeInt(this.videos);
-            dest.writeInt(this.audios);
-            dest.writeInt(this.notes);
-            dest.writeInt(this.friends);
-            dest.writeInt(this.photos);
-            dest.writeInt(this.groups);
-            dest.writeInt(this.online_friends);
-            dest.writeInt(this.mutual_friends);
-            dest.writeInt(this.user_videos);
-            dest.writeInt(this.followers);
-            dest.writeInt(this.subscriptions);
-            dest.writeInt(this.pages);
-        }
 
-        private Counters(Parcel in) {
-            this.albums = in.readInt();
-            this.videos = in.readInt();
-            this.audios = in.readInt();
-            this.notes = in.readInt();
-            this.friends = in.readInt();
-            this.photos = in.readInt();
-            this.groups = in.readInt();
-            this.online_friends = in.readInt();
-            this.mutual_friends = in.readInt();
-            this.user_videos = in.readInt();
-            this.followers = in.readInt();
-            this.subscriptions = in.readInt();
-            this.pages = in.readInt();
-        }
-
-        public static Creator<Counters> CREATOR = new Creator<Counters>() {
-            public Counters createFromParcel(Parcel source) {
-                return new Counters(source);
-            }
-
-            public Counters[] newArray(int size) {
-                return new Counters[size];
-            }
-        };
     }
 
     public static class Sex {
@@ -750,121 +680,11 @@ public class VKApiUserFull extends VKApiUser {
         public static final String PARENT = "parent";
     }
 
-    @Override
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeString(this.activity);
-        dest.writeParcelable(this.status_audio, flags);
-        dest.writeString(this.bdate);
-        dest.writeParcelable(this.city, flags);
-        dest.writeParcelable(this.country, flags);
-        dest.writeLong(this.last_seen);
-        dest.writeParcelable(this.universities, flags);
-        dest.writeParcelable(this.schools, flags);
-        dest.writeInt(this.smoking);
-        dest.writeInt(this.alcohol);
-        dest.writeInt(this.political);
-        dest.writeInt(this.life_main);
-        dest.writeInt(this.people_main);
-        dest.writeString(this.inspired_by);
-        dest.writeStringArray(this.langs);
-        dest.writeString(this.religion);
-        dest.writeString(this.facebook);
-        dest.writeString(this.facebook_name);
-        dest.writeString(this.livejournal);
-        dest.writeString(this.skype);
-        dest.writeString(this.site);
-        dest.writeString(this.twitter);
-        dest.writeString(this.instagram);
-        dest.writeString(this.mobile_phone);
-        dest.writeString(this.home_phone);
-        dest.writeString(this.screen_name);
-        dest.writeString(this.activities);
-        dest.writeString(this.interests);
-        dest.writeString(this.movies);
-        dest.writeString(this.tv);
-        dest.writeString(this.books);
-        dest.writeString(this.games);
-        dest.writeString(this.about);
-        dest.writeString(this.quotes);
-        dest.writeByte(can_post ? (byte) 1 : (byte) 0);
-        dest.writeByte(can_see_all_posts ? (byte) 1 : (byte) 0);
-        dest.writeByte(can_write_private_message ? (byte) 1 : (byte) 0);
-        dest.writeByte(wall_comments ? (byte) 1 : (byte) 0);
-        dest.writeByte(is_banned ? (byte) 1 : (byte) 0);
-        dest.writeByte(is_deleted ? (byte) 1 : (byte) 0);
-        dest.writeByte(wall_default_owner ? (byte) 1 : (byte) 0);
-        dest.writeByte(verified ? (byte) 1 : (byte) 0);
-        dest.writeInt(this.sex);
-        dest.writeParcelable(this.counters, flags);
-        dest.writeInt(this.relation);
-        dest.writeParcelable(this.relatives, flags);
-        dest.writeByte(blacklisted_by_me ? (byte) 1 : (byte) 0);
-    }
+
     public VKApiUserFull() {}
-    public VKApiUserFull(Parcel in) {
-        super(in);
-        this.activity = in.readString();
-        this.status_audio = in.readParcelable(VKApiAudio.class.getClassLoader());
-        this.bdate = in.readString();
-        this.city = in.readParcelable(VKApiCity.class.getClassLoader());
-        this.country = in.readParcelable(VKApiCountry.class.getClassLoader());
-        this.last_seen = in.readLong();
-        this.universities = in.readParcelable(VKList.class.getClassLoader());
-        this.schools = in.readParcelable(VKList.class.getClassLoader());
-        this.smoking = in.readInt();
-        this.alcohol = in.readInt();
-        this.political = in.readInt();
-        this.life_main = in.readInt();
-        this.people_main = in.readInt();
-        this.inspired_by = in.readString();
-        this.langs = in.createStringArray();
-        this.religion = in.readString();
-        this.facebook = in.readString();
-        this.facebook_name = in.readString();
-        this.livejournal = in.readString();
-        this.skype = in.readString();
-        this.site = in.readString();
-        this.twitter = in.readString();
-        this.instagram = in.readString();
-        this.mobile_phone = in.readString();
-        this.home_phone = in.readString();
-        this.screen_name = in.readString();
-        this.activities = in.readString();
-        this.interests = in.readString();
-        this.movies = in.readString();
-        this.tv = in.readString();
-        this.books = in.readString();
-        this.games = in.readString();
-        this.about = in.readString();
-        this.quotes = in.readString();
-        this.can_post = in.readByte() != 0;
-        this.can_see_all_posts = in.readByte() != 0;
-        this.can_write_private_message = in.readByte() != 0;
-        this.wall_comments = in.readByte() != 0;
-        this.is_banned = in.readByte() != 0;
-        this.is_deleted = in.readByte() != 0;
-        this.wall_default_owner = in.readByte() != 0;
-        this.verified = in.readByte() != 0;
-        this.sex = in.readInt();
-        this.counters = in.readParcelable(Counters.class.getClassLoader());
-        this.relation = in.readInt();
-        this.relatives = in.readParcelable(VKList.class.getClassLoader());
-        this.blacklisted_by_me = in.readByte() != 0;
-    }
 
-    public static Creator<VKApiUserFull> CREATOR = new Creator<VKApiUserFull>() {
-        public VKApiUserFull createFromParcel(Parcel source) {
-            return new VKApiUserFull(source);
-        }
-
-        public VKApiUserFull[] newArray(int size) {
-            return new VKApiUserFull[size];
-        }
-    };
 }

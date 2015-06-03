@@ -22,9 +22,9 @@
 package vk.model;
 
 
-import android.os.Parcelable;
 
-import org.json.JSONException;
+
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
@@ -83,7 +83,7 @@ public class VKApiPlace extends VKApiModel implements Identifiable {
      */
     public String address;
 
-	public VKApiPlace(JsonNode from) throws JSONException
+	public VKApiPlace(JsonNode from)
 	{
 		parse(from);
 	}

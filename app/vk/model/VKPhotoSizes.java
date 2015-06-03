@@ -22,8 +22,8 @@
 package vk.model;
 
 
-import android.os.Parcelable;
-import org.json.JSONArray;
+
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.Collections;
@@ -104,7 +104,7 @@ public class VKPhotoSizes extends VKList<VKApiPhotoSize> {
     /**
      * Creates and fills list of photo sizes.
      */
-    public VKPhotoSizes(JSONArray from) {
+    public VKPhotoSizes(JsonNode from) {
         super();
         fill(from);
     }
@@ -115,7 +115,7 @@ public class VKPhotoSizes extends VKList<VKApiPhotoSize> {
      * @param width original photo width in pixels.
      * @param height original photo height in pixels.
      */
-    public void fill(JSONArray from, int width, int height) {
+    public void fill(JsonNode from, int width, int height) {
         setOriginalDimension(width, height);
         fill(from);
     }
@@ -124,7 +124,7 @@ public class VKPhotoSizes extends VKList<VKApiPhotoSize> {
      * Fill list according with given data.
      * @param from array of photo sizes returned by VK.
      */
-    public void fill(JSONArray from) {
+    public void fill(JsonNode from) {
         fill(from, parser);
         sort();
     }
@@ -208,35 +208,12 @@ public class VKPhotoSizes extends VKList<VKApiPhotoSize> {
         return mHeightThumb;
     }
 
-    @Override
+
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeInt(this.mOriginalWidth);
-        dest.writeInt(this.mOriginalHeight);
-        dest.writeString(this.mWidthThumb);
-        dest.writeInt(this.mLastWidth);
-    }
 
-    private VKPhotoSizes(Parcel in) {
-        super(in);
-        this.mOriginalWidth = in.readInt();
-        this.mOriginalHeight = in.readInt();
-        this.mWidthThumb = in.readString();
-        this.mLastWidth = in.readInt();
-    }
 
-    public static Creator<VKPhotoSizes> CREATOR = new Creator<VKPhotoSizes>() {
-        public VKPhotoSizes createFromParcel(Parcel source) {
-            return new VKPhotoSizes(source);
-        }
 
-        public VKPhotoSizes[] newArray(int size) {
-            return new VKPhotoSizes[size];
-        }
-    };
 }

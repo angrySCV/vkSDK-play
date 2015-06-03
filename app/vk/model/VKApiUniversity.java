@@ -22,12 +22,10 @@
 package vk.model;
 
 
-import android.os.Parcelable;
 
-import org.json.JSONException;
+
+
 import com.fasterxml.jackson.databind.JsonNode;
-
-import static android.text.TextUtils.isEmpty;
 
 /**
  * An university object describes an university.
@@ -90,7 +88,7 @@ public class VKApiUniversity extends VKApiModel implements Identifiable {
      */
     public String education_status;
 
-	public VKApiUniversity(JsonNode from) throws JSONException
+	public VKApiUniversity(JsonNode from)
 	{
 		parse(from);
 	}
@@ -98,36 +96,21 @@ public class VKApiUniversity extends VKApiModel implements Identifiable {
      * Fills a University instance from JsonNode.
      */
     public VKApiUniversity parse(JsonNode from) {
-        id = from.optInt("id");
-        country_id = from.optInt("country_id");
-        city_id = from.optInt("city_id");
-        name = from.optString("name");
-        faculty = from.optString("faculty");
-        faculty_name = from.optString("faculty_name");
-        chair = from.optInt("chair");
-        chair_name = from.optString("chair_name");
-        graduation = from.optInt("graduation");
-        education_form = from.optString("education_form");
-        education_status = from.optString("education_status");
+        id = from.get("id").asInt();
+        country_id = from.get("country_id").asInt();
+        city_id = from.get("city_id").asInt();
+        name = from.get("name").asText();
+        faculty = from.get("faculty").asText();
+        faculty_name = from.get("faculty_name").asText();
+        chair = from.get("chair").asInt();
+        chair_name = from.get("chair_name").asText();
+        graduation = from.get("graduation").asInt();
+        education_form = from.get("education_form").asText();
+        education_status = from.get("education_status").asText();
         return this;
     }
 
-    /**
-     * Creates a University instance from Parcel.
-     */
-    public VKApiUniversity(Parcel in) {
-        this.id = in.readInt();
-        this.country_id = in.readInt();
-        this.city_id = in.readInt();
-        this.name = in.readString();
-        this.faculty = in.readString();
-        this.faculty_name = in.readString();
-        this.chair = in.readInt();
-        this.chair_name = in.readString();
-        this.graduation = in.readInt();
-        this.education_form = in.readString();
-        this.education_status = in.readString();
-    }
+
 
     /**
      * Creates empty University instance.
@@ -144,11 +127,11 @@ public class VKApiUniversity extends VKApiModel implements Identifiable {
             StringBuilder result = new StringBuilder(name);
             result.append(" \'");
             result.append(String.format("%02d", graduation % 100));
-            if(!isEmpty(faculty_name)) {
+            if(faculty_name!=null) {
                 result.append(", ");
                 result.append(faculty_name);
             }
-            if(!isEmpty(chair_name)) {
+            if(chair_name!=null) {
                 result.append(", ");
                 result.append(chair_name);
             }
@@ -162,34 +145,11 @@ public class VKApiUniversity extends VKApiModel implements Identifiable {
         return id;
     }
 
-    @Override
+
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
-        dest.writeInt(this.country_id);
-        dest.writeInt(this.city_id);
-        dest.writeString(this.name);
-        dest.writeString(this.faculty);
-        dest.writeString(this.faculty_name);
-        dest.writeInt(this.chair);
-        dest.writeString(this.chair_name);
-        dest.writeInt(this.graduation);
-        dest.writeString(this.education_form);
-        dest.writeString(this.education_status);
-    }
 
-    public static Creator<VKApiUniversity> CREATOR = new Creator<VKApiUniversity>() {
-        public VKApiUniversity createFromParcel(Parcel source) {
-            return new VKApiUniversity(source);
-        }
-
-        public VKApiUniversity[] newArray(int size) {
-            return new VKApiUniversity[size];
-        }
-    };
 
 }

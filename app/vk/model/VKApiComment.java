@@ -99,36 +99,21 @@ public class VKApiComment extends VKApiModel implements Identifiable
 	 */
 	public VKApiComment parse(JsonNode from)
 	{
-		id = from.optInt("id");
-		from_id = from.optInt("from_id");
-		date = from.optLong("date");
-		text = from.optString("text");
-		reply_to_user = from.optInt("reply_to_user");
-		reply_to_comment = from.optInt("reply_to_comment");
-		attachments.fill(from.optJSONArray("attachments"));
-		JsonNode likes = from.optJsonNode("likes");
-		this.likes = ParseUtils.parseInt(likes, "count");
-		this.user_likes = ParseUtils.parseBoolean(likes, "user_likes");
-		this.can_like = ParseUtils.parseBoolean(likes, "can_like");
+		id = from.get("id").asInt();
+		from_id = from.get("from_id").asInt();
+		date = from.get("date").asLong();
+		text = from.get("text").asText();
+		reply_to_user = from.get("reply_to_user").asInt();
+		reply_to_comment = from.get("reply_to_comment").asInt();
+//		attachments.fill(from.get("attachments"));
+		JsonNode likes = from.get("likes");
+		this.likes = likes.get("count").asInt();
+		this.user_likes = likes.get("user_likes").asBoolean();
+		this.can_like = likes.get("can_like").asBoolean();
 		return this;
 	}
 
-	/**
-	 * Creates a Comment instance from Parcel.
-	 */
-	public VKApiComment(Parcel in)
-	{
-		this.id = in.readInt();
-		this.from_id = in.readInt();
-		this.date = in.readLong();
-		this.text = in.readString();
-		this.reply_to_user = in.readInt();
-		this.reply_to_comment = in.readInt();
-		this.likes = in.readInt();
-		this.user_likes = in.readByte() != 0;
-		this.can_like = in.readByte() != 0;
-		this.attachments = in.readParcelable(VKAttachments.class.getClassLoader());
-	}
+
 
 
 	/**
@@ -145,37 +130,11 @@ public class VKApiComment extends VKApiModel implements Identifiable
 		return id;
 	}
 
-	@Override
+
 	public int describeContents()
 	{
 		return 0;
 	}
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags)
-	{
-		dest.writeInt(this.id);
-		dest.writeInt(this.from_id);
-		dest.writeLong(this.date);
-		dest.writeString(this.text);
-		dest.writeInt(this.reply_to_user);
-		dest.writeInt(this.reply_to_comment);
-		dest.writeInt(this.likes);
-		dest.writeByte(user_likes ? (byte) 1 : (byte) 0);
-		dest.writeByte(can_like ? (byte) 1 : (byte) 0);
-		dest.writeParcelable(this.attachments, flags);
-	}
 
-	public static Creator<VKApiComment> CREATOR = new Creator<VKApiComment>()
-	{
-		public VKApiComment createFromParcel(Parcel source)
-		{
-			return new VKApiComment(source);
-		}
-
-		public VKApiComment[] newArray(int size)
-		{
-			return new VKApiComment[size];
-		}
-	};
 }

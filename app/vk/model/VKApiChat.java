@@ -29,7 +29,7 @@
 package vk.model;
 
 
-import org.json.JSONArray;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
@@ -70,30 +70,21 @@ public class VKApiChat extends VKApiModel implements Identifiable {
      * Fills a Chat instance from JsonNode.
      */
     public VKApiChat parse(JsonNode source) {
-        id = source.optInt("id");
-        type = source.optString("type");
-        title = source.optString("title");
-        admin_id = source.optInt("admin_id");
-        JSONArray users = source.optJSONArray("users");
+        id = source.get("id").asInt();
+        type = source.get("type").asText();
+        title = source.get("title").asText();
+        admin_id = source.get("admin_id").asInt();
+        JsonNode users = source.get("users");
         if(users != null) {
-            this.users = new int[users.length()];
+            this.users = new int[users.size()];
             for(int i = 0; i < this.users.length; i++) {
-                this.users[i] = users.optInt(i);
+                this.users[i] = users.get(i).asInt();
             }
         }
         return this;
     }
 
-    /**
-     * Creates a Chat instance from Parcel.
-     */
-    public VKApiChat(Parcel in) {
-        this.id = in.readInt();
-        this.type = in.readString();
-        this.title = in.readString();
-        this.admin_id = in.readInt();
-        this.users = in.createIntArray();
-    }
+
 
     /**
      * Creates empty Chat instance.
@@ -107,27 +98,9 @@ public class VKApiChat extends VKApiModel implements Identifiable {
         return id;
     }
 
-    @Override
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
-        dest.writeString(this.type);
-        dest.writeString(this.title);
-        dest.writeInt(this.admin_id);
-        dest.writeIntArray(this.users);
-    }
 
-    public static Creator<VKApiChat> CREATOR = new Creator<VKApiChat>() {
-        public VKApiChat createFromParcel(Parcel source) {
-            return new VKApiChat(source);
-        }
-
-        public VKApiChat[] newArray(int size) {
-            return new VKApiChat[size];
-        }
-    };
 }

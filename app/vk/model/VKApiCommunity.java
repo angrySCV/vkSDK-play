@@ -106,28 +106,28 @@ public class VKApiCommunity extends VKApiOwner implements Identifiable {
      */
     public VKApiCommunity parse(JsonNode from) {
         super.parse(from);
-        name = from.optString("name");
-        screen_name = from.optString("screen_name", String.format("club%d", Math.abs(id)));
-        is_closed = from.optInt("is_closed");
-        is_admin = ParseUtils.parseBoolean(from, "is_admin");
-        admin_level = from.optInt("admin_level");
-        is_member = ParseUtils.parseBoolean(from, "is_member");
+        name = from.get("name").asText();
+        screen_name = from.get("screen_name").asText();
+        is_closed = from.get("is_closed").asInt();
+        is_admin = from.get("is_admin").asBoolean();
+        admin_level = from.get("admin_level").asInt();
+        is_member = from.get("is_member").asBoolean();
 
-        photo_50 = from.optString("photo_50", PHOTO_50);
-        if(!TextUtils.isEmpty(photo_50)) {
+        photo_50 = from.get("photo_50").asText();
+        if(photo_50!=null) {
             photo.add(VKApiPhotoSize.create(photo_50, 50));
         }
-        photo_100 = from.optString("photo_100", PHOTO_100);
-        if(!TextUtils.isEmpty(photo_100)) {
+        photo_100 = from.get("photo_100").asText();
+        if(photo_100!=null) {
             photo.add(VKApiPhotoSize.create(photo_100, 100));
         }
-        photo_200 = from.optString("photo_200", null);
-        if(!TextUtils.isEmpty(photo_200)) {
+        photo_200 = from.get("photo_200").asText();
+        if(photo_200!=null) {
             photo.add(VKApiPhotoSize.create(photo_200, 200));
         }
         photo.sort();
 
-        String type = from.optString("type", "group");
+        String type = from.get("type").asText();
         if(TYPE_GROUP.equals(type)) {
             this.type = Type.GROUP;
         } else if(TYPE_PAGE.equals(type)) {
@@ -138,23 +138,7 @@ public class VKApiCommunity extends VKApiOwner implements Identifiable {
         return this;
     }
 
-    /**
-     * Creates a community object from Parcel
-     */
-    public VKApiCommunity(Parcel in) {
-        super(in);
-        this.name = in.readString();
-        this.screen_name = in.readString();
-        this.is_closed = in.readInt();
-        this.is_admin = in.readByte() != 0;
-        this.admin_level = in.readInt();
-        this.is_member = in.readByte() != 0;
-        this.type = in.readInt();
-        this.photo_50 = in.readString();
-        this.photo_100 = in.readString();
-        this.photo_200 = in.readString();
-        this.photo = in.readParcelable(VKPhotoSizes.class.getClassLoader());
-    }
+
 
     /**
      * Creates empty Community instance.
@@ -168,36 +152,10 @@ public class VKApiCommunity extends VKApiOwner implements Identifiable {
         return name;
     }
 
-    @Override
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeString(this.name);
-        dest.writeString(this.screen_name);
-        dest.writeInt(this.is_closed);
-        dest.writeByte(is_admin ? (byte) 1 : (byte) 0);
-        dest.writeInt(this.admin_level);
-        dest.writeByte(is_member ? (byte) 1 : (byte) 0);
-        dest.writeInt(this.type);
-        dest.writeString(this.photo_50);
-        dest.writeString(this.photo_100);
-        dest.writeString(this.photo_200);
-        dest.writeParcelable(this.photo, flags);
-    }
-
-    public static Creator<VKApiCommunity> CREATOR = new Creator<VKApiCommunity>() {
-        public VKApiCommunity createFromParcel(Parcel source) {
-            return new VKApiCommunity(source);
-        }
-
-        public VKApiCommunity[] newArray(int size) {
-            return new VKApiCommunity[size];
-        }
-    };
 
     /**
      * Access level to manage community.

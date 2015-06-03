@@ -30,7 +30,7 @@ package vk.model;
 
 
 
-import org.json.JSONException;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import static vk.model.VKAttachments.*;
 
@@ -110,7 +110,7 @@ public class VKApiWikiPage extends VKAttachments.VKApiAttachment {
      */
     public String parent2;
 
-	public VKApiWikiPage(JsonNode from) throws JSONException
+	public VKApiWikiPage(JsonNode from)
 	{
 		parse(from);
 	}
@@ -118,42 +118,24 @@ public class VKApiWikiPage extends VKAttachments.VKApiAttachment {
      * Fills a WikiPage instance from JsonNode.
      */
     public VKApiWikiPage parse(JsonNode source) {
-        id = source.optInt("id");
-        group_id = source.optInt("group_id");
-        creator_id = source.optInt("creator_id");
-        title = source.optString("title");
-        this.source = source.optString("source");
-        current_user_can_edit = ParseUtils.parseBoolean(source, "current_user_can_edit");
-        current_user_can_edit_access = ParseUtils.parseBoolean(source, "current_user_can_edit_access");
-        who_can_view = source.optInt("who_can_view");
-        who_can_edit = source.optInt("who_can_edit");
-        editor_id = source.optInt("editor_id");
-        edited = source.optLong("edited");
-        created = source.optLong("created");
-        parent = source.optString("parent");
-        parent2 = source.optString("parent2");
+        id = source.get("id").asInt();
+        group_id = source.get("group_id").asInt();
+        creator_id = source.get("creator_id").asInt();
+        title = source.get("title").asText();
+        this.source = source.get("source").asText();
+        current_user_can_edit = source.get("current_user_can_edit").asBoolean();
+        current_user_can_edit_access = source.get("current_user_can_edit_access").asBoolean();
+        who_can_view = source.get("who_can_view").asInt();
+        who_can_edit = source.get("who_can_edit").asInt();
+        editor_id = source.get("editor_id").asInt();
+        edited = source.get("edited").asLong();
+        created = source.get("created").asLong();
+        parent = source.get("parent").asText();
+        parent2 = source.get("parent2").asText();
         return this;
     }
 
-    /**
-     * Creates a WikiPage instance from Parcel.
-     */
-    public VKApiWikiPage(Parcel in) {
-        this.id = in.readInt();
-        this.group_id = in.readInt();
-        this.creator_id = in.readInt();
-        this.title = in.readString();
-        this.source = in.readString();
-        this.current_user_can_edit = in.readByte() != 0;
-        this.current_user_can_edit_access = in.readByte() != 0;
-        this.who_can_view = in.readInt();
-        this.who_can_edit = in.readInt();
-        this.editor_id = in.readInt();
-        this.edited = in.readLong();
-        this.created = in.readLong();
-        this.parent = in.readString();
-        this.parent2 = in.readString();
-    }
+
 
     /**
      * Creates empty WikiPage instance.
@@ -172,38 +154,12 @@ public class VKApiWikiPage extends VKAttachments.VKApiAttachment {
         return TYPE_WIKI_PAGE;
     }
 
-    @Override
+
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
-        dest.writeInt(this.group_id);
-        dest.writeInt(this.creator_id);
-        dest.writeString(this.title);
-        dest.writeString(this.source);
-        dest.writeByte(current_user_can_edit ? (byte) 1 : (byte) 0);
-        dest.writeByte(current_user_can_edit_access ? (byte) 1 : (byte) 0);
-        dest.writeInt(this.who_can_view);
-        dest.writeInt(this.who_can_edit);
-        dest.writeInt(this.editor_id);
-        dest.writeLong(this.edited);
-        dest.writeLong(this.created);
-        dest.writeString(this.parent);
-        dest.writeString(this.parent2);
-    }
 
-    public static Creator<VKApiWikiPage> CREATOR = new Creator<VKApiWikiPage>() {
-        public VKApiWikiPage createFromParcel(Parcel source) {
-            return new VKApiWikiPage(source);
-        }
-
-        public VKApiWikiPage[] newArray(int size) {
-            return new VKApiWikiPage[size];
-        }
-    };
 
     @Override
     public int getId() {

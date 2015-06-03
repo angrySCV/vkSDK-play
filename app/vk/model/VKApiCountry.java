@@ -22,9 +22,6 @@
 package vk.model;
 
 
-import android.os.Parcelable;
-
-import org.json.JSONException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
@@ -43,7 +40,7 @@ public class VKApiCountry extends VKApiModel implements Identifiable {
      */
     public String title;
 
-	public VKApiCountry(JsonNode from) throws JSONException
+	public VKApiCountry(JsonNode from)
 	{
 		parse(from);
 	}
@@ -51,18 +48,11 @@ public class VKApiCountry extends VKApiModel implements Identifiable {
      * Fills a Country instance from JsonNode.
      */
     public VKApiCountry parse(JsonNode from) {
-        id = from.optInt("id");
-        title = from.optString("title");
+        id = from.get("id").asInt();
+        title = from.get("title").asText();
         return this;
     }
 
-    /**
-     * Creates a Country instance from Parcel.
-     */
-    public VKApiCountry(Parcel in) {
-        this.id = in.readInt();
-        this.title = in.readString();
-    }
 
     /**
      * Creates empty Country instance.
@@ -81,25 +71,9 @@ public class VKApiCountry extends VKApiModel implements Identifiable {
         return title;
     }
 
-    @Override
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
-        dest.writeString(this.title);
-    }
-
-    public static Creator<VKApiCountry> CREATOR = new Creator<VKApiCountry>() {
-        public VKApiCountry createFromParcel(Parcel source) {
-            return new VKApiCountry(source);
-        }
-
-        public VKApiCountry[] newArray(int size) {
-            return new VKApiCountry[size];
-        }
-    };
 
 }

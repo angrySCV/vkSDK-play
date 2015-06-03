@@ -47,13 +47,6 @@ public class VKApiPostedPhoto extends VKApiPhoto {
     }
 
     /**
-     * Creates a PostedPhoto instance from Parcel.
-     */
-    public VKApiPostedPhoto(Parcel in) {
-        super(in);
-    }
-
-    /**
      * Creates empty PostedPhoto instance.
      */
     public VKApiPostedPhoto() {

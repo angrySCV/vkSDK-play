@@ -22,12 +22,10 @@
 package vk.model;
 
 
-import android.os.Parcelable;
-
-
-import org.json.JSONException;
 import com.fasterxml.jackson.databind.JsonNode;
-import static vk.model.VKAttachments.*;
+
+import static vk.model.VKAttachments.TYPE_DOC;
+import static vk.model.VKAttachments.VKApiAttachment;
 
 /**
  * A document object describes a document file.
@@ -88,7 +86,7 @@ public class VKApiDocument extends VKApiAttachment implements Identifiable {
     private boolean mIsGif;
     private boolean mIsImage;
 
-	public VKApiDocument(JsonNode from) throws JSONException
+	public VKApiDocument(JsonNode from)
 	{
 		parse(from);
 	}
@@ -96,43 +94,27 @@ public class VKApiDocument extends VKApiAttachment implements Identifiable {
      * Fills a Doc instance from JsonNode.
      */
     public VKApiDocument parse(JsonNode jo) {
-        id = jo.optInt("id");
-        owner_id = jo.optInt("owner_id");
-        title = jo.optString("title");
-        size = jo.optLong("size");
-        ext = jo.optString("ext");
-        url = jo.optString("url");
-        access_key = jo.optString("access_key");
+        id = jo.get("id").asInt();
+        owner_id = jo.get("owner_id").asInt();
+        title = jo.get("title").asText();
+        size = jo.get("size").asLong();
+        ext = jo.get("ext").asText();
+        url = jo.get("url").asText();
+        access_key = jo.get("access_key").asText();
 
-        photo_100 = jo.optString("photo_100");
-        if(!TextUtils.isEmpty(photo_100)) {
+        photo_100 = jo.get("photo_100").asText();
+        if(photo_100!=null) {
             photo.add(VKApiPhotoSize.create(photo_100, 100, 75));
         }
-        photo_130 = jo.optString("photo_130");
-        if(!TextUtils.isEmpty(photo_130)) {
+        photo_130 = jo.get("photo_130").asText();
+        if(photo_130!=null) {
             photo.add(VKApiPhotoSize.create(photo_130, 130, 100));
         }
         photo.sort();
         return this;
     }
 
-    /**
-     * Creates a Doc instance from Parcel.
-     */
-    public VKApiDocument(Parcel in) {
-        this.id = in.readInt();
-        this.owner_id = in.readInt();
-        this.title = in.readString();
-        this.size = in.readLong();
-        this.ext = in.readString();
-        this.url = in.readString();
-        this.photo_100 = in.readString();
-        this.photo_130 = in.readString();
-        this.photo = in.readParcelable(VKPhotoSizes.class.getClassLoader());
-        this.access_key = in.readString();
-        this.mIsImage = in.readByte() != 0;
-        this.mIsGif = in.readByte() != 0;
-    }
+
 
     /**
      * Creates empty Doc instance.
@@ -168,7 +150,7 @@ public class VKApiDocument extends VKApiAttachment implements Identifiable {
     @Override
     public CharSequence toAttachmentString() {
         StringBuilder result = new StringBuilder(TYPE_DOC).append(owner_id).append('_').append(id);
-        if(!TextUtils.isEmpty(access_key)) {
+        if(access_key!=null) {
             result.append('_');
             result.append(access_key);
         }
@@ -180,34 +162,9 @@ public class VKApiDocument extends VKApiAttachment implements Identifiable {
         return TYPE_DOC;
     }
 
-    @Override
+
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
-        dest.writeInt(this.owner_id);
-        dest.writeString(this.title);
-        dest.writeLong(this.size);
-        dest.writeString(this.ext);
-        dest.writeString(this.url);
-        dest.writeString(this.photo_100);
-        dest.writeString(this.photo_130);
-        dest.writeParcelable(this.photo, flags);
-        dest.writeString(this.access_key);
-        dest.writeByte(mIsImage ? (byte) 1 : (byte) 0);
-        dest.writeByte(mIsGif ? (byte) 1 : (byte) 0);
-    }
-
-    public static Creator<VKApiDocument> CREATOR = new Creator<VKApiDocument>() {
-        public VKApiDocument createFromParcel(Parcel source) {
-            return new VKApiDocument(source);
-        }
-
-        public VKApiDocument[] newArray(int size) {
-            return new VKApiDocument[size];
-        }
-    };
 }

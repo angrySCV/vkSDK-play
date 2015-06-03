@@ -30,9 +30,9 @@ package vk.model;
 
 
 
-import org.json.JSONException;
 import com.fasterxml.jackson.databind.JsonNode;
-import static vk.model.VKAttachments.*;
+
+import static vk.model.VKAttachments.TYPE_LINK;
 
 /**
  * A link object describes a link attachment
@@ -74,7 +74,7 @@ public class VKApiLink extends VKAttachments.VKApiAttachment {
         this.url = url;
     }
 
-	public VKApiLink(JsonNode from) throws JSONException
+	public VKApiLink(JsonNode from)
 	{
 		parse(from);
 	}
@@ -82,24 +82,15 @@ public class VKApiLink extends VKAttachments.VKApiAttachment {
      * Fills a Link instance from JsonNode.
      */
     public VKApiLink parse(JsonNode source) {
-        url = source.optString("url");
-        title = source.optString("title");
-        description = source.optString("description");
-        image_src = source.optString("image_src");
-        preview_page = source.optString("preview_page");
+        url = source.get("url").asText();
+        title = source.get("title").asText();
+        description = source.get("description").asText();
+        image_src = source.get("image_src").asText();
+        preview_page = source.get("preview_page").asText();
         return this;
     }
 
-    /**
-     * Creates a Link instance from Parcel.
-     */
-    private VKApiLink(Parcel in) {
-        this.url = in.readString();
-        this.title = in.readString();
-        this.description = in.readString();
-        this.image_src = in.readString();
-        this.preview_page = in.readString();
-    }
+
 
     /**
      * Creates empty Link instance.
@@ -118,29 +109,11 @@ public class VKApiLink extends VKAttachments.VKApiAttachment {
         return TYPE_LINK;
     }
 
-    @Override
+
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.url);
-        dest.writeString(this.title);
-        dest.writeString(this.description);
-        dest.writeString(this.image_src);
-        dest.writeString(this.preview_page);
-    }
-
-    public static Creator<VKApiLink> CREATOR = new Creator<VKApiLink>() {
-        public VKApiLink createFromParcel(Parcel source) {
-            return new VKApiLink(source);
-        }
-
-        public VKApiLink[] newArray(int size) {
-            return new VKApiLink[size];
-        }
-    };
 
     @Override
     public int getId() {

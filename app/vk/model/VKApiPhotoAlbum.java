@@ -22,11 +22,9 @@
 package vk.model;
 
 
-import android.os.Parcelable;
-import org.json.JSONArray;
-import org.json.JSONException;
 import com.fasterxml.jackson.databind.JsonNode;
-import static vk.model.VKAttachments.*;
+
+import static vk.model.VKAttachments.TYPE_ALBUM;
 
 /**
  * Describes a photo album
@@ -109,7 +107,7 @@ public class VKApiPhotoAlbum extends VKAttachments.VKApiAttachment implements Id
      */
     public VKPhotoSizes photo = new VKPhotoSizes();
 
-	public VKApiPhotoAlbum(JsonNode from) throws JSONException
+	public VKApiPhotoAlbum(JsonNode from)
 	{
 		parse(from);
 	}
@@ -117,22 +115,22 @@ public class VKApiPhotoAlbum extends VKAttachments.VKApiAttachment implements Id
      * Creates a PhotoAlbum instance from JsonNode.
      */
     public VKApiPhotoAlbum parse(JsonNode from) {
-        id = from.optInt("id");
-        thumb_id = from.optInt("thumb_id");
-        owner_id = from.optInt("owner_id");
-        title = from.optString("title");
-        description = from.optString("description");
-        created = from.optLong("created");
-        updated = from.optLong("updated");
-        size = from.optInt("size");
-        can_upload = ParseUtils.parseBoolean(from, "can_upload");
-        thumb_src = from.optString("thumb_src");
+        id = from.get("id").asInt();
+        thumb_id = from.get("thumb_id").asInt();
+        owner_id = from.get("owner_id").asInt();
+        title = from.get("title").asText();
+        description = from.get("description").asText();
+        created = from.get("created").asLong();
+        updated = from.get("updated").asLong();
+        size = from.get("size").asInt();
+        can_upload = from.get("can_upload").asBoolean();
+        thumb_src = from.get("thumb_src").asText();
         if(from.has("privacy")) {
-            privacy = from.optInt("privacy");
+            privacy = from.get("privacy").asInt();
         } else {
-            privacy = VKPrivacy.parsePrivacy(from.optJsonNode("privacy_view"));
+            privacy = VKPrivacy.parsePrivacy(from.get("privacy_view"));
         }
-        JSONArray sizes = from.optJSONArray("sizes");
+        JsonNode sizes = from.get("sizes");
         if(sizes != null) {
             photo.fill(sizes);
         } else {
@@ -144,23 +142,7 @@ public class VKApiPhotoAlbum extends VKAttachments.VKApiAttachment implements Id
         return this;
     }
 
-    /**
-     * Creates a PhotoAlbum instance from Parcel.
-     */
-    public VKApiPhotoAlbum(Parcel in) {
-        this.id = in.readInt();
-        this.title = in.readString();
-        this.size = in.readInt();
-        this.privacy = in.readInt();
-        this.description = in.readString();
-        this.owner_id = in.readInt();
-        this.can_upload = in.readByte() != 0;
-        this.updated = in.readLong();
-        this.created = in.readLong();
-        this.thumb_id = in.readInt();
-        this.thumb_src = in.readString();
-        this.photo = in.readParcelable(VKPhotoSizes.class.getClassLoader());
-    }
+
 
     /**
      * Creates empty PhotoAlbum instance.
@@ -193,35 +175,11 @@ public class VKApiPhotoAlbum extends VKAttachments.VKApiAttachment implements Id
         return TYPE_ALBUM;
     }
 
-    @Override
+
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
-        dest.writeString(this.title);
-        dest.writeInt(this.size);
-        dest.writeInt(this.privacy);
-        dest.writeString(this.description);
-        dest.writeInt(this.owner_id);
-        dest.writeByte(can_upload ? (byte) 1 : (byte) 0);
-        dest.writeLong(this.updated);
-        dest.writeLong(this.created);
-        dest.writeInt(this.thumb_id);
-        dest.writeString(this.thumb_src);
-        dest.writeParcelable(this.photo, flags);
-    }
 
-    public static Creator<VKApiPhotoAlbum> CREATOR = new Creator<VKApiPhotoAlbum>() {
-        public VKApiPhotoAlbum createFromParcel(Parcel source) {
-            return new VKApiPhotoAlbum(source);
-        }
-
-        public VKApiPhotoAlbum[] newArray(int size) {
-            return new VKApiPhotoAlbum[size];
-        }
-    };
 
 }

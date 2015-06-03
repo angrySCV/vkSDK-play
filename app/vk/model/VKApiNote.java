@@ -30,9 +30,9 @@ package vk.model;
 
 
 
-import org.json.JSONException;
 import com.fasterxml.jackson.databind.JsonNode;
-import static vk.model.VKAttachments.*;
+
+import static vk.model.VKAttachments.TYPE_NOTE;
 
 /**
  * A note object describes a note.
@@ -75,7 +75,7 @@ public class VKApiNote extends VKAttachments.VKApiAttachment implements Identifi
      */
     public int read_comments;
 
-	public VKApiNote(JsonNode from) throws JSONException
+	public VKApiNote(JsonNode from)
 	{
 		parse(from);
 	}
@@ -83,13 +83,13 @@ public class VKApiNote extends VKAttachments.VKApiAttachment implements Identifi
      * Fills a Note instance from JsonNode.
      */
     public VKApiNote parse(JsonNode source) {
-        id = source.optInt("id");
-        user_id = source.optInt("user_id");
-        title = source.optString("title");
-        text = source.optString("text");
-        date = source.optLong("date");
-        comments = source.optInt("comments");
-        read_comments = source.optInt("read_comments");
+        id = source.get("id").asInt();
+        user_id = source.get("user_id").asInt();
+        title = source.get("title").asText();
+        text = source.get("text").asText();
+        date = source.get("date").asLong();
+        comments = source.get("comments").asInt();
+        read_comments = source.get("read_comments").asInt();
         return this;
     }
 

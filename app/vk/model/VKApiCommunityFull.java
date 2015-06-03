@@ -22,8 +22,6 @@
 package vk.model;
 
 
-import android.os.Parcelable;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
@@ -226,43 +224,43 @@ public class VKApiCommunityFull extends VKApiCommunity {
         super();
     }
 
-    public VKApiCommunityFull parse(JsonNode jo) {
-        super.parse(jo);
+    public VKApiCommunityFull parse(JsonNode json) {
+        super.parse(json);
 
-        JsonNode city = jo.optJsonNode(CITY);
+        JsonNode city = json.get(CITY);
         if(city != null) {
             this.city = new VKApiCity().parse(city);
         }
-        JsonNode country = jo.optJsonNode(COUNTRY);
+        JsonNode country = json.get(COUNTRY);
         if(country != null) {
             this.country = new VKApiCountry().parse(country);
         }
 
-        JsonNode place = jo.optJsonNode(PLACE);
+        JsonNode place = json.get(PLACE);
         if(place != null) this.place = new VKApiPlace().parse(place);
 
-        description = jo.optString(DESCRIPTION);
-        wiki_page = jo.optString(WIKI_PAGE);
-        members_count = jo.optInt(MEMBERS_COUNT);
+        description = json.get(DESCRIPTION).asText();
+        wiki_page = json.get(WIKI_PAGE).asText();
+        members_count = json.get(MEMBERS_COUNT).asInt();
 
-        JsonNode counters = jo.optJsonNode(COUNTERS);
+        JsonNode counters = json.get(COUNTERS);
         if(counters != null) this.counters = new Counters(place);
 
-        start_date = jo.optLong(START_DATE);
-        end_date = jo.optLong(END_DATE);
-        can_post = ParseUtils.parseBoolean(jo, CAN_POST);
-        can_see_all_posts = ParseUtils.parseBoolean(jo, CAN_SEE_ALL_POSTS);
-        status = jo.optString(STATUS);
+        start_date = json.get(START_DATE).asLong();
+        end_date = json.get(END_DATE).asLong();
+        can_post = json.get(CAN_POST).asBoolean();
+        can_see_all_posts = json.get(CAN_SEE_ALL_POSTS).asBoolean();
+        status = json.get(STATUS).asText();
 
-        JsonNode status_audio = jo.optJsonNode("status_audio");
+        JsonNode status_audio = json.get("status_audio");
         if(status_audio != null) this.status_audio = new VKApiAudio().parse(status_audio);
 
-        contacts = new VKList<Contact>(jo.optJSONArray(CONTACTS), Contact.class);
-        links = new VKList<Link>(jo.optJSONArray(LINKS), Link.class);
-        fixed_post = jo.optInt(FIXED_POST);
-        verified = ParseUtils.parseBoolean(jo, VERIFIED);
-        blacklisted = ParseUtils.parseBoolean(jo, VERIFIED);
-        site = jo.optString(SITE);
+//        contacts = new VKList<Contact>(Json.fromJson(json.get(CONTACTS), Contact.class));
+//        links = new VKList<Link>(json.optJsonNode(LINKS), Link.class);
+        fixed_post = json.get(FIXED_POST).asInt();
+        verified = json.get(VERIFIED).asBoolean();
+        blacklisted = json.get(VERIFIED).asBoolean();
+        site = json.get(SITE).asText();
         return this;
     }
 
@@ -283,48 +281,21 @@ public class VKApiCommunityFull extends VKApiCommunity {
         public int docs = NO_COUNTER;
 
         public Counters(JsonNode from) {
-            photos = from.optInt("photos", photos);
-            albums = from.optInt("albums", albums);
-            audios = from.optInt("audios", audios);
-            videos = from.optInt("videos", videos);
-            topics = from.optInt("topics", topics);
-            docs = from.optInt("docs", docs);
+            photos = from.get("photos").asInt();
+            albums = from.get("albums").asInt();
+            audios = from.get("audios").asInt();
+            videos = from.get("videos").asInt();
+            topics = from.get("topics").asInt();
+            docs = from.get("docs").asInt();
         }
 
 
-        @Override
+
         public int describeContents() {
             return 0;
         }
 
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(this.photos);
-            dest.writeInt(this.albums);
-            dest.writeInt(this.audios);
-            dest.writeInt(this.videos);
-            dest.writeInt(this.topics);
-            dest.writeInt(this.docs);
-        }
 
-        private Counters(Parcel in) {
-            this.photos = in.readInt();
-            this.albums = in.readInt();
-            this.audios = in.readInt();
-            this.videos = in.readInt();
-            this.topics = in.readInt();
-            this.docs = in.readInt();
-        }
-
-        public static Creator<Counters> CREATOR = new Creator<Counters>() {
-            public Counters createFromParcel(Parcel source) {
-                return new Counters(source);
-            }
-
-            public Counters[] newArray(int size) {
-                return new Counters[size];
-            }
-        };
     }
 
     public static class Contact extends VKApiModel implements Identifiable {
@@ -338,38 +309,20 @@ public class VKApiCommunityFull extends VKApiCommunity {
         }
 
 	    public Contact parse(JsonNode from) {
-		    user_id = from.optInt("user_id");
-		    desc = from.optString("desc");
-		    email = from.optString("email");
+		    user_id = from.get("user_id").asInt();
+		    desc = from.get("desc").asText();
+		    email = from.get("email").asText();
 		    return this;
 	    }
 
-        @Override
+
         public int describeContents() {
             return 0;
         }
 
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(this.user_id);
-            dest.writeString(this.desc);
 
-        }
 
-        private Contact(Parcel in) {
-            this.user_id = in.readInt();
-            this.desc = in.readString();
-        }
 
-        public static Creator<Contact> CREATOR = new Creator<Contact>() {
-            public Contact createFromParcel(Parcel source) {
-                return new Contact(source);
-            }
-
-            public Contact[] newArray(int size) {
-                return new Contact[size];
-            }
-        };
 
         @Override
         public int getId() {
@@ -398,51 +351,26 @@ public class VKApiCommunityFull extends VKApiCommunity {
             parse(from);
         }
 	    public Link parse(JsonNode from) {
-		    url = from.optString("url");
-		    name = from.optString("name");
-		    desc = from.optString("desc");
+		    url = from.get("url").asText();
+		    name = from.get("name").asText();
+		    desc = from.get("desc").asText();
 
-		    String photo_50 = from.optString("photo_50");
-		    if(!TextUtils.isEmpty(photo_50)) {
+		    String photo_50 = from.get("photo_50").asText();
+		    if(photo_50!=null) {
 			    photo.add(VKApiPhotoSize.create(photo_50, 50));
 		    }
-		    String photo_100 = from.optString("photo_100");
-		    if(!TextUtils.isEmpty(photo_100)) {
+		    String photo_100 = from.get("photo_100").asText();
+		    if(photo_100!=null) {
 			    photo.add(VKApiPhotoSize.create(photo_100, 100));
 		    }
 		    photo.sort();
 		    return this;
 	    }
 
-        @Override
         public int describeContents() {
             return 0;
         }
 
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(this.url);
-            dest.writeString(this.name);
-            dest.writeString(this.desc);
-            dest.writeParcelable(this.photo, flags);
-        }
-
-        public Link(Parcel in) {
-            this.url = in.readString();
-            this.name = in.readString();
-            this.desc = in.readString();
-            this.photo = in.readParcelable(null);
-        }
-
-        public static Creator<Link> CREATOR = new Creator<Link>() {
-            public Link createFromParcel(Parcel source) {
-                return new Link(source);
-            }
-
-            public Link[] newArray(int size) {
-                return new Link[size];
-            }
-        };
 
         @Override
         public int getId() {
@@ -450,65 +378,10 @@ public class VKApiCommunityFull extends VKApiCommunity {
         }
     }
 
-    @Override
+
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeParcelable(this.city, flags);
-        dest.writeParcelable(this.country, flags);
-        dest.writeParcelable(this.status_audio, flags);
-        dest.writeParcelable(this.place, flags);
-        dest.writeString(this.description);
-        dest.writeString(this.wiki_page);
-        dest.writeInt(this.members_count);
-        dest.writeParcelable(this.counters, flags);
-        dest.writeLong(this.start_date);
-        dest.writeLong(this.end_date);
-        dest.writeByte(can_post ? (byte) 1 : (byte) 0);
-        dest.writeByte(can_see_all_posts ? (byte) 1 : (byte) 0);
-        dest.writeString(this.status);
-        dest.writeParcelable(this.contacts, flags);
-        dest.writeParcelable(this.links, flags);
-        dest.writeInt(this.fixed_post);
-        dest.writeByte(verified ? (byte) 1 : (byte) 0);
-        dest.writeString(this.site);
-        dest.writeByte(blacklisted ? (byte) 1 : (byte) 0);
-    }
 
-    public VKApiCommunityFull(Parcel in) {
-        super(in);
-        this.city = in.readParcelable(VKApiCity.class.getClassLoader());
-        this.country = in.readParcelable(VKApiCountry.class.getClassLoader());
-        this.status_audio = in.readParcelable(VKApiAudio.class.getClassLoader());
-        this.place = in.readParcelable(VKApiPlace.class.getClassLoader());
-        this.description = in.readString();
-        this.wiki_page = in.readString();
-        this.members_count = in.readInt();
-        this.counters = in.readParcelable(Counters.class.getClassLoader());
-        this.start_date = in.readLong();
-        this.end_date = in.readLong();
-        this.can_post = in.readByte() != 0;
-        this.can_see_all_posts = in.readByte() != 0;
-        this.status = in.readString();
-        this.contacts = in.readParcelable(VKList.class.getClassLoader());
-        this.links = in.readParcelable(VKList.class.getClassLoader());
-        this.fixed_post = in.readInt();
-        this.verified = in.readByte() != 0;
-        this.site = in.readString();
-        this.blacklisted = in.readByte() != 0;
-    }
-
-    public static Creator<VKApiCommunityFull> CREATOR = new Creator<VKApiCommunityFull>() {
-        public VKApiCommunityFull createFromParcel(Parcel source) {
-            return new VKApiCommunityFull(source);
-        }
-
-        public VKApiCommunityFull[] newArray(int size) {
-            return new VKApiCommunityFull[size];
-        }
-    };
 }

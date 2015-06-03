@@ -181,7 +181,7 @@ public class VKApiPost extends VKAttachments.VKApiAttachment implements Identifi
             this.geo = new VKApiPlace().parse(geo);
         }
         signer_id = source.get("signer_id").asInt();
-        copy_history = new VKList<VKApiPost>(source.get("copy_history"), VKApiPost.class);
+//        copy_history = new VKList<VKApiPost>(source.get("copy_history"), VKApiPost.class);
         return this;
     }
 

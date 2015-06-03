@@ -30,7 +30,7 @@ package vk.model;
 
 
 
-import org.json.JSONException;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import static vk.model.VKAttachments.*;
 
@@ -75,7 +75,7 @@ public class VKApiPoll extends VKAttachments.VKApiAttachment {
      */
     public VKList<Answer> answers;
 
-	public VKApiPoll(JsonNode from) throws JSONException
+	public VKApiPoll(JsonNode from)
 	{
 		parse(from);
 	}
@@ -83,28 +83,16 @@ public class VKApiPoll extends VKAttachments.VKApiAttachment {
      * Fills a Poll instance from JsonNode.
      */
     public VKApiPoll parse(JsonNode source) {
-        id = source.optInt("id");
-        owner_id = source.optInt("owner_id");
-        created = source.optLong("created");
-        question = source.optString("question");
-        votes = source.optInt("votes");
-        answer_id = source.optInt("answer_id");
-        answers = new VKList<Answer>(source.optJSONArray("answers"), Answer.class);
+        id = source.get("id").asInt();
+        owner_id = source.get("owner_id").asInt();
+        created = source.get("created").asLong();
+        question = source.get("question").asText();
+        votes = source.get("votes").asInt();
+        answer_id = source.get("answer_id").asInt();
+//        answers = new VKList<Answer>(source.get("answers"), Answer.class);
         return this;
     }
 
-    /**
-     * Creates a Poll instance from Parcel.
-     */
-    public VKApiPoll(Parcel in) {
-        this.id = in.readInt();
-        this.owner_id = in.readInt();
-        this.created = in.readLong();
-        this.question = in.readString();
-        this.votes = in.readInt();
-        this.answer_id = in.readInt();
-        this.answers = in.readParcelable(VKList.class.getClassLoader());
-    }
 
     /**
      * Creates empty Country instance.
@@ -154,42 +142,19 @@ public class VKApiPoll extends VKAttachments.VKApiAttachment {
         public double rate;
 
         public Answer parse(JsonNode source) {
-            id = source.optInt("id");
-            text = source.optString("text");
-            votes = source.optInt("votes");
-            rate = source.optDouble("rate");
+            id = source.get("id").asInt();
+            text = source.get("text").asText();
+            votes = source.get("votes").asInt();
+            rate = source.get("rate").asDouble();
             return this;
         }
 
-        @Override
+
         public int describeContents() {
             return 0;
         }
 
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(this.id);
-            dest.writeString(this.text);
-            dest.writeInt(this.votes);
-            dest.writeDouble(this.rate);
-        }
 
-        public Answer(Parcel in) {
-            this.id = in.readInt();
-            this.text = in.readString();
-            this.votes = in.readInt();
-            this.rate = in.readDouble();
-        }
-
-        public static Creator<Answer> CREATOR = new Creator<Answer>() {
-            public Answer createFromParcel(Parcel source) {
-                return new Answer(source);
-            }
-
-            public Answer[] newArray(int size) {
-                return new Answer[size];
-            }
-        };
 
         @Override
         public int getId() {
@@ -197,29 +162,10 @@ public class VKApiPoll extends VKAttachments.VKApiAttachment {
         }
     }
 
-    @Override
+
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
-        dest.writeInt(this.owner_id);
-        dest.writeLong(this.created);
-        dest.writeString(this.question);
-        dest.writeInt(this.votes);
-        dest.writeInt(this.answer_id);
-        dest.writeParcelable(this.answers, flags);
-    }
 
-    public static Creator<VKApiPoll> CREATOR = new Creator<VKApiPoll>() {
-        public VKApiPoll createFromParcel(Parcel source) {
-            return new VKApiPoll(source);
-        }
-
-        public VKApiPoll[] newArray(int size) {
-            return new VKApiPoll[size];
-        }
-    };
 }

@@ -22,13 +22,11 @@
 package vk.model;
 
 
-import android.os.Parcelable;
 
-import com.vk.sdk.VKSdk;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import com.fasterxml.jackson.databind.JsonNode;
+import vk.VKApi;
+import vk.VKApiConst;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -90,7 +88,7 @@ public class VKList<T extends VKApiModel & Identifiable> extends VKApiModel impl
      * @param from an array of items in the list. You can use null.
      * @param clazz class represents a model that has a public constructor with {@link org.json.JsonNode} argument.
      */
-    public VKList(JSONArray from, Class<? extends T> clazz) {
+    public VKList(JsonNode from, Class<? extends T> clazz) {
         fill(from, clazz);
     }
 
@@ -109,7 +107,7 @@ public class VKList<T extends VKApiModel & Identifiable> extends VKApiModel impl
      * @param from an array of items in the list. You can use null.
      * @param creator interface implementation to parse objects.
      */
-    public VKList(JSONArray from, Parser<T> creator) {
+    public VKList(JsonNode from, Parser<T> creator) {
 
         fill(from, creator);
     }
@@ -121,12 +119,12 @@ public class VKList<T extends VKApiModel & Identifiable> extends VKApiModel impl
      */
     public void fill(JsonNode from, Class<? extends T> clazz) {
         if (from.has("response")) {
-            JSONArray array = from.optJSONArray("response");
+            JsonNode array = from.get("response");
             if (array != null) {
                 fill(array, clazz);
             }
             else {
-                fill(from.optJsonNode("response"), clazz);
+                fill(from.get("response"), clazz);
             }
         } else {
             fill(from, new ReflectParser<T>(clazz));
@@ -138,7 +136,7 @@ public class VKList<T extends VKApiModel & Identifiable> extends VKApiModel impl
      * @param from an array of items in the list. You can use null.
      * @param clazz class represents a model that has a public constructor with {@link org.json.JsonNode} argument.
      */
-    public void fill(JSONArray from, Class<? extends T> clazz) {
+    public void fill(JsonNode from, Class<? extends T> clazz) {
         fill(from, new ReflectParser<T>(clazz));
     }
 
@@ -149,8 +147,8 @@ public class VKList<T extends VKApiModel & Identifiable> extends VKApiModel impl
      */
     public void fill(JsonNode from, Parser<? extends T> creator) {
         if(from != null) {
-            fill(from.optJSONArray("items"), creator);
-            count = from.optInt("count", count);
+            fill(from.get("items"), creator);
+            count = from.get("count").asInt();
         }
     }
 
@@ -159,16 +157,16 @@ public class VKList<T extends VKApiModel & Identifiable> extends VKApiModel impl
      * @param from an array of items in the list. You can use null.
      * @param creator interface implementation to parse objects.
      */
-    public void fill(JSONArray from, Parser<? extends T> creator) {
+    public void fill(JsonNode from, Parser<? extends T> creator) {
         if(from != null) {
-            for(int i = 0; i < from.length(); i++) {
+            for(int i = 0; i < from.size(); i++) {
                 try {
-                    T object = creator.parseObject(from.getJsonNode(i));
+                    T object = creator.parseObject(from.get(i));
                     if(object != null) {
                         items.add(object);
                     }
                 } catch (Exception e) {
-                    if (VKSdk.DEBUG)
+                    if (VKApiConst.DEBUG)
                         e.printStackTrace();
                 }
             }
@@ -383,49 +381,21 @@ public class VKList<T extends VKApiModel & Identifiable> extends VKApiModel impl
         return items.toArray(array);
     }
 
-    @Override
+
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(items.size());
-        for(T item: this) {
-            dest.writeParcelable(item, flags);
-        }
-        dest.writeInt(this.count);
-    }
+
 
     /**
-     * Creates list from Parcel
-     */
-    public VKList(Parcel in) {
-        int size = in.readInt();
-        for(int i = 0; i < size; i++) {
-            items.add( ((T) in.readParcelable(((Object) this).getClass().getClassLoader())));
-        }
-        this.count = in.readInt();
-    }
-
-    public static Creator<VKList> CREATOR = new Creator<VKList>() {
-        public VKList createFromParcel(Parcel source) {
-            return new VKList(source);
-        }
-
-        public VKList[] newArray(int size) {
-            return new VKList[size];
-        }
-    };
-
-    /**
-     * Used when parsing the list objects as interator created from {@link org.json.JSONArray} a instances of items of the list.
+     * Used when parsing the list objects as interator created from {@link org.json.JsonNode} a instances of items of the list.
      * @param <D> list item type.
      */
     public static interface Parser<D> {
 
         /**
-         * Creates a list item of its representation return VK API from {@link org.json.JSONArray}
+         * Creates a list item of its representation return VK API from {@link org.json.JsonNode}
          * @param source representation of the object in the format returned by VK API.
          * @return created element to add to the list.
          * @throws Exception if the exception is thrown, the element iterated this method will not be added to the list.
@@ -464,7 +434,7 @@ public class VKList<T extends VKApiModel & Identifiable> extends VKApiModel impl
     }
 
     @Override
-    public VKApiModel parse(JsonNode response) throws JSONException {
+    public VKApiModel parse(JsonNode response)  {
         throw new JSONException("Operation is not supported while class is generic");
     }
 }
