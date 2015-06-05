@@ -29,10 +29,9 @@
 package vk.model;
 
 
-
-
 import com.fasterxml.jackson.databind.JsonNode;
-import static vk.model.VKAttachments.*;
+
+import static vk.model.VKAttachments.TYPE_POLL;
 
 /**
  * Describes poll on the wall on board.
