@@ -26,6 +26,7 @@ package vk;
  */
 public class VKApiConst {
     //usual data
+    // TODO заменить использование параметров в запросах на константы
     public final static String API_URL     = "https://api.vk.com/method/";
     public final static String API_VERSION = "5.33";
     public final static boolean DEBUG = false;

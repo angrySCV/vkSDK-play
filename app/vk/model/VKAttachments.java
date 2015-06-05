@@ -145,44 +145,7 @@ public class VKAttachments extends VKList<VKAttachments.VKApiAttachment> {
 	/**
 	 * Parser that's used for parsing photo sizes.
 	 */
-	private final Parser<VKApiAttachment> parser = new Parser<VKApiAttachment>() {
-		@Override
-		public VKApiAttachment parseObject (JsonNode attachment) throws Exception {
-			String type = attachment.get("type").asText();
-			if (TYPE_PHOTO.equals(type)) {
-				return new VKApiPhoto().parse(attachment.get(TYPE_PHOTO));
-			} else if (TYPE_VIDEO.equals(type)) {
-				return new VKApiVideo().parse(attachment.get(TYPE_VIDEO));
-			} else if (TYPE_AUDIO.equals(type)) {
-				return new VKApiAudio().parse(attachment.get(TYPE_AUDIO));
-			} else if (TYPE_DOC.equals(type)) {
-				return new VKApiDocument().parse(attachment.get(TYPE_DOC));
-			} else if (TYPE_POST.equals(type)) {
-				return new VKApiPost().parse(attachment.get(TYPE_POST));
-			} else if (TYPE_POSTED_PHOTO.equals(type)) {
-				return new VKApiPostedPhoto().parse(attachment.get(TYPE_POSTED_PHOTO));
-			} else if (TYPE_LINK.equals(type)) {
-				return new VKApiLink().parse(attachment.get(TYPE_LINK));
-			} else if (TYPE_NOTE.equals(type)) {
-				return new VKApiNote().parse(attachment.get(TYPE_NOTE));
-			} else if (TYPE_APP.equals(type)) {
-				return new VKApiApplicationContent().parse(attachment.get(TYPE_APP));
-			} else if (TYPE_POLL.equals(type)) {
-				return new VKApiPoll().parse(attachment.get(TYPE_POLL));
-			} else if (TYPE_WIKI_PAGE.equals(type)) {
-				return new VKApiWikiPage().parse(attachment.get(TYPE_WIKI_PAGE));
-			} else if (TYPE_ALBUM.equals(type)) {
-				return new VKApiPhotoAlbum().parse(attachment.get(TYPE_ALBUM));
-			}
-			return null;
-		}
-	};
 
-
-	@Override
-	public int describeContents () {
-		return 0;
-	}
 
 
 

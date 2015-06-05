@@ -21,93 +21,166 @@
 
 package vk.methods;
 
+import play.libs.F;
+import play.libs.WS;
+import util.Util;
 import vk.VKApiConst;
-import vk.VKParameters;
-import vk.VKRequest;
-import vk.model.VKCommentArray;
-import vk.model.VKPostArray;
-import vk.model.VKWallPostResult;
+
+import java.util.Map;
 
 /**
  * Builds requests for API.wall part
  */
-public class VKApiWall extends VKApiBase {
-    public static final String EXTENDED = VKApiConst.EXTENDED;
-    public VKRequest get(VKParameters params) {
-        if (params.containsKey(EXTENDED) && (Integer)(params.get(EXTENDED)) == 1) {
-            return prepareRequest("get", params, VKRequest.HttpMethod.GET, VKPostArray.class);
-        } else {
-            return prepareRequest("get", params);
-        }
-    }
+public class VKApiWall {
+	public static final String EXTENDED = VKApiConst.EXTENDED;
 
-    public VKRequest getById(VKParameters params) {
-        if (params.containsKey(EXTENDED) && ((Integer) params.get(EXTENDED)) == 1) {
-            return prepareRequest("get", params, VKRequest.HttpMethod.GET, VKPostArray.class);
-        } else {
-            return prepareRequest("get", params);
-        }
-    }
+	public F.Promise<WS.Response> get (String owner_id) {
+		return get(owner_id, "0");
+	}
+	public F.Promise<WS.Response> get (String owner_id, String offset) {
+		return WS.url(VKApiConst.API_URL+"wall.get")
+				.setQueryParameter("owner_id", owner_id)
+				.setQueryParameter("offset", offset)
+				.setQueryParameter("count", "100")
+				.get();
+	}
 
-    public VKRequest savePost(VKParameters params) {
-        return prepareRequest("savePost", params);
-    }
+	public F.Promise<WS.Response> search(String owner_id,String query) {
+		return search(owner_id, query, "0");
+	}
+	public F.Promise<WS.Response> search(String owner_id,String query, String offset) {
+		return WS.url(VKApiConst.API_URL+"wall.search")
+				.setQueryParameter("owner_id", owner_id)
+				.setQueryParameter("query", query)
+				.setQueryParameter("offset", offset)
+				.setQueryParameter("count", "100")
+				.get();
+	}
+	public F.Promise<WS.Response> getById (String posts) {
+		return WS.url(VKApiConst.API_URL+"wall.getById")
+		.setQueryParameter("posts", posts)
+				.get();
+	}
 
 
-    public VKRequest post(VKParameters parameters) {
-        return prepareRequest("post", parameters, VKRequest.HttpMethod.POST, VKWallPostResult.class);
-    }
+	public F.Promise<WS.Response> post (String owner_id, String message) {
+		return WS.url(VKApiConst.API_URL+"wall.post")
+				.setQueryParameter("owner_id", owner_id)
+				.setQueryParameter("message", message)
+				.get();
+	}
 
-    public VKRequest repost(VKParameters params) {
-        return prepareRequest("repost", params);
-    }
+	public F.Promise<WS.Response> post (String owner_id, String message, Map<String,String> parameters) {
+		WS.WSRequestHolder holder = WS.url(VKApiConst.API_URL+"wall.post")
+				.setQueryParameter("owner_id", owner_id)
+				.setQueryParameter("message", message);
+		Util.mergeParams(holder, parameters);
+				return holder.get();
+	}
 
-    public VKRequest getReposts(VKParameters params) {
-        return prepareRequest("getReposts", params);
-    }
+	public F.Promise<WS.Response> repost (String object, String message, String group_id) {
+		return WS.url(VKApiConst.API_URL+"wall.repost")
+				.setQueryParameter("object", object)
+				.setQueryParameter("message", message)
+				.setQueryParameter("group_id", group_id)
+				.get();
+	}
 
-    public VKRequest edit(VKParameters params) {
-        return prepareRequest("edit", params);
-    }
+	public F.Promise<WS.Response> getReposts (String owner_id) {
+		return WS.url(VKApiConst.API_URL+"wall.getReposts")
+				.setQueryParameter("owner_id", owner_id)
+				.get();
+	}
 
-    public VKRequest delete(VKParameters params) {
-        return prepareRequest("delete", params);
-    }
+	public F.Promise<WS.Response> edit (String owner_id, String post_id, String message) {
+		return WS.url(VKApiConst.API_URL+"wall.edit")
+				.setQueryParameter("owner_id", owner_id)
+				.setQueryParameter("post_id", post_id)
+				.setQueryParameter("message", message)
+				.get();
+	}
 
-    public VKRequest restore(VKParameters params) {
-        return prepareRequest("restore", params);
-    }
+	public F.Promise<WS.Response> delete (String owner_id, String post_id) {
+		return WS.url(VKApiConst.API_URL+"wall.delete")
+				.setQueryParameter("owner_id", owner_id)
+				.setQueryParameter("post_id", post_id)
+				.get();
+	}
 
-    public VKRequest getComments(VKParameters params) {
-        return prepareRequest("getComments", params, VKRequest.HttpMethod.GET, VKCommentArray.class);
-    }
+	public F.Promise<WS.Response> restore (String owner_id, String post_id) {
+		return WS.url(VKApiConst.API_URL+"wall.restore")
+				.setQueryParameter("owner_id", owner_id)
+				.setQueryParameter("post_id", post_id)
+				.get();
+	}
 
-    public VKRequest addComment(VKParameters params) {
-        return prepareRequest("addComment", params);
-    }
+	public F.Promise<WS.Response> getComments (String owner_id, String post_id) {
+		return getComments(owner_id, post_id, "0");
+	}
+	public F.Promise<WS.Response> getComments (String owner_id, String post_id, String offset) {
+		return WS.url(VKApiConst.API_URL+"wall.getComments")
+				.setQueryParameter("owner_id", owner_id)
+				.setQueryParameter("post_id", post_id)
+				.setQueryParameter("need_likes", "0")
+				.setQueryParameter("count", "100")
+				.setQueryParameter("offset", offset)
+				.get();
+	}
 
-    public VKRequest editComment(VKParameters params) {
-        return prepareRequest("editComment", params);
-    }
+	public F.Promise<WS.Response> addComment (String owner_id, String post_id, String text) {
+		return WS.url(VKApiConst.API_URL+"wall.addComment")
+				.setQueryParameter("owner_id", owner_id)
+				.setQueryParameter("post_id", post_id)
+				.setQueryParameter("text", text)
+				.get();
+	}
 
-    public VKRequest deleteComment(VKParameters params) {
-        return prepareRequest("deleteComment", params);
-    }
 
-    public VKRequest restoreComment(VKParameters params) {
-        return prepareRequest("restoreComment", params);
-    }
+	public F.Promise<WS.Response> addComment (String owner_id, String post_id, String text, Map<String,String> parameters) {
+		 WS.WSRequestHolder holder = WS.url(VKApiConst.API_URL+"wall.addComment")
+				.setQueryParameter("owner_id", owner_id)
+				.setQueryParameter("post_id", post_id)
+				.setQueryParameter("text", text);
+		Util.mergeParams(holder, parameters);
+		return holder.get();
+	}
 
-    public VKRequest reportPost(VKParameters params) {
-        return prepareRequest("reportPost", params);
-    }
+	public F.Promise<WS.Response> editComment (String owner_id, String comment_id, String message) {
+		return WS.url(VKApiConst.API_URL+"wall.editComment")
+				.setQueryParameter("owner_id", owner_id)
+				.setQueryParameter("comment_id", comment_id)
+				.setQueryParameter("message", message)
+				.get();
+	}
 
-    public VKRequest reportComment(VKParameters params) {
-        return prepareRequest("reportComment", params);
-    }
+	public F.Promise<WS.Response> deleteComment (String owner_id, String comment_id) {
+		return WS.url(VKApiConst.API_URL+"wall.deleteComment")
+				.setQueryParameter("owner_id", owner_id)
+				.setQueryParameter("comment_id", comment_id)
+				.get();
+	}
 
-    @Override
-    protected String getMethodsGroup() {
-        return "wall";
-    }
+	public F.Promise<WS.Response> restoreComment (String owner_id, String comment_id) {
+		return WS.url(VKApiConst.API_URL+"wall.restoreComment")
+				.setQueryParameter("owner_id", owner_id)
+				.setQueryParameter("comment_id", comment_id)
+				.get();
+	}
+
+	public F.Promise<WS.Response> reportPost (String owner_id,String post_id, String reason) {
+		return WS.url(VKApiConst.API_URL+"wall.reportPost")
+				.setQueryParameter("owner_id", owner_id)
+				.setQueryParameter("post_id", post_id)
+				.setQueryParameter("reason", reason)
+				.get();
+	}
+
+	public F.Promise<WS.Response> reportComment (String owner_id, String comment_id, String reason) {
+		return WS.url(VKApiConst.API_URL+"wall.reportComment")
+				.setQueryParameter("owner_id", owner_id)
+				.setQueryParameter("comment_id", comment_id)
+				.setQueryParameter("reason", reason)
+				.get();
+	}
+
 }

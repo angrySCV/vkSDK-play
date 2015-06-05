@@ -91,34 +91,19 @@ public class VKApiPlace extends VKApiModel implements Identifiable {
      * Fills a Place instance from JsonNode.
      */
     public VKApiPlace parse(JsonNode from) {
-        id = from.optInt("id");
-        title = from.optString("title");
-        latitude = from.optDouble("latitude");
-        longitude = from.optDouble("longitude");
-        created = from.optLong("created");
-        checkins = from.optInt("checkins");
-        updated = from.optLong("updated");
-        country_id = from.optInt("country");
-        city_id = from.optInt("city");
-        address = from.optString("address");
+//        id = from.optInt("id");
+//        title = from.optString("title");
+//        latitude = from.optDouble("latitude");
+//        longitude = from.optDouble("longitude");
+//        created = from.optLong("created");
+//        checkins = from.optInt("checkins");
+//        updated = from.optLong("updated");
+//        country_id = from.optInt("country");
+//        city_id = from.optInt("city");
+//        address = from.optString("address");
         return this;
     }
 
-    /**
-     * Creates a Place instance from Parcel.
-     */
-    public VKApiPlace(Parcel in) {
-        this.id = in.readInt();
-        this.title = in.readString();
-        this.latitude = in.readDouble();
-        this.longitude = in.readDouble();
-        this.created = in.readLong();
-        this.checkins = in.readInt();
-        this.updated = in.readLong();
-        this.country_id = in.readInt();
-        this.city_id = in.readInt();
-        this.address = in.readString();
-    }
 
     /**
      * Creates empty Place instance.
@@ -132,37 +117,11 @@ public class VKApiPlace extends VKApiModel implements Identifiable {
         return id;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
-        dest.writeString(this.title);
-        dest.writeDouble(this.latitude);
-        dest.writeDouble(this.longitude);
-        dest.writeLong(this.created);
-        dest.writeInt(this.checkins);
-        dest.writeLong(this.updated);
-        dest.writeInt(this.country_id);
-        dest.writeInt(this.city_id);
-        dest.writeString(address);
-    }
 
     @Override
     public String toString() {
         return address;
     }
 
-    public static Creator<VKApiPlace> CREATOR = new Creator<VKApiPlace>() {
-        public VKApiPlace createFromParcel(Parcel source) {
-            return new VKApiPlace(source);
-        }
-
-        public VKApiPlace[] newArray(int size) {
-            return new VKApiPlace[size];
-        }
-    };
 }

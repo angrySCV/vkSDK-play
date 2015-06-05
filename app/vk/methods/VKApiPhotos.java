@@ -21,35 +21,36 @@
 
 package vk.methods;
 
-import vk.VKParameters;
-import vk.VKRequest;
-import vk.model.VKPhotoArray;
 
 /**
  * Builds requests for API.photos part
  */
-public class VKApiPhotos extends VKApiBase {
+public class VKApiPhotos  {
 
 
-    public VKRequest getMessagesUploadServer () {
-        return prepareRequest("getMessagesUploadServer", null);
-    }
+//    F.Promise<WS.Response> getMessagesUploadServer () {
+//        return WS.url(VKApiConst.API_URL+"photos.getMessagesUploadServer", null)
+//                .setQueryParameter("q", id)
+//                .get();
+//    }
+//
+//    F.Promise<WS.Response> saveWallPhoto(String input) {
+//        return WS.url(VKApiConst.API_URL+"photos.saveWallPhoto")
+//                .setQueryParameter("q", id)
+//                .get();
+//
+//    }
+//
+//    F.Promise<WS.Response> save(String input) {
+//        return WS.url(VKApiConst.API_URL+"photos.save")
+//                .setQueryParameter("q", id)
+//                .get();
+//    }
+//
+//    F.Promise<WS.Response> saveMessagesPhoto(String input) {
+//        return WS.url(VKApiConst.API_URL+"photos.saveMessagesPhoto")
+//                .setQueryParameter("q", id)
+//                .get();
+//    }
 
-    public VKRequest saveWallPhoto(VKParameters params) {
-        return prepareRequest("saveWallPhoto", params, VKRequest.HttpMethod.POST, VKPhotoArray.class);
-
-    }
-
-    public VKRequest save(VKParameters params) {
-        return prepareRequest("save", params, VKRequest.HttpMethod.POST, VKPhotoArray.class);
-    }
-
-    public VKRequest saveMessagesPhoto(VKParameters params) {
-        return prepareRequest("saveMessagesPhoto", params, VKRequest.HttpMethod.POST, VKPhotoArray.class);
-    }
-
-    @Override
-    protected String getMethodsGroup() {
-        return "photos";
-    }
 }

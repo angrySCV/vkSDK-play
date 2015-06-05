@@ -24,6 +24,7 @@ package vk;
 import vk.methods.*;
 
 /**
+ *  TODO сделать ко всем методам API возможность добавление дополнительных параметров типа Map<String, String> params
  Provides access for API parts.
  */
 public class VKApi {
@@ -72,12 +73,7 @@ public class VKApi {
      */
     public static VKApiGroups groups() { return new VKApiGroups(); }
     /**
-     * Upload a specified file to VK servers for posting on user or group wall
-     * @param image Image file to upload. Must have extension jpg or png
-     * @param userId User wall id or 0
-     * @param groupId Group id or 0
-     * @return Prepared vk request for photo upload
      */
-
+    public static VKApiLikes likes() { return new VKApiLikes(); }
 	
 }

@@ -84,15 +84,6 @@ public class VKPhotoSizes extends VKList<VKApiPhotoSize> {
      */
     private int mLastHeight;
 
-    /**
-     * Parser that's used for parsing photo sizes.
-     */
-    private final Parser<VKApiPhotoSize> parser = new Parser<VKApiPhotoSize>() {
-        @Override
-        public VKApiPhotoSize parseObject(JsonNode source) throws Exception {
-            return VKApiPhotoSize.parse(source, mOriginalWidth, mOriginalHeight);
-        }
-    };
 
     /**
      * Creates empty list of photo sizes.
@@ -125,8 +116,7 @@ public class VKPhotoSizes extends VKList<VKApiPhotoSize> {
      * @param from array of photo sizes returned by VK.
      */
     public void fill(JsonNode from) {
-        fill(from, parser);
-        sort();
+
     }
 
     /**

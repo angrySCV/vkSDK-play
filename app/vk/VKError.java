@@ -22,6 +22,7 @@
 package vk;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import play.Logger;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -66,7 +67,7 @@ public class VKError {
     /**
      * Request which caused error
      */
-    public VKRequest request;
+//    F.Promise<WS.Response> request;
     /**
      * May contains such errors:<br/>
      * <b>HTTP status code</b> if HTTP error occured;<br/>
@@ -146,18 +147,106 @@ public class VKError {
         }
     }
 
-    /**
-     * Repeats failed captcha request with user entered answer to captcha
-     *
-     * @param userEnteredCode answer for captcha
-     */
-    public void answerCaptcha(String userEnteredCode) {
-        VKParameters params = new VKParameters();
-        params.put(VKApiConst.CAPTCHA_SID, captchaSid);
-        params.put(VKApiConst.CAPTCHA_KEY, userEnteredCode);
-        request.addExtraParameters(params);
-        request.repeat();
+    private boolean processCommonError (final VKError error) {
+        switch (errorCode) {
+            case 1:
+                Logger.info("Произошла неизвестная ошибка.");
+                break;
+            case 2:
+                Logger.info("Приложение выключено.  ");
+                break;
+            case 3:
+                Logger.info("Передан неизвестный метод. ");
+                break;
+            case 4:
+                Logger.info("Неверная подпись.  ");
+                break;
+            case 5:
+                Logger.info("Авторизация пользователя не удалась. Убедитесь, что Вы используете верную схему авторизации. Для работы с методами без префикса secure Вам нужно авторизовать пользователя одним из этих способов: http://vk.com/dev/auth_sites, http://vk.com/dev/auth_mobile.");
+                break;
+            case 6:
+                Logger.info("Слишком много запросов в секунду. Задайте больший интервал между вызовами или используйте метод execute. Подробнее об ограничениях на частоту вызовов см. на странице vk.com/dev/api_requests.");
+                break;
+            case 7:
+                Logger.info("Нет прав для выполнения этого действия. Проверьте, получены ли нужные права доступа при авторизации. Это можно сделать с помощью метода account.getAppPermissions.");
+                break;
+            case 8:
+                Logger.info("Неверный запрос. Проверьте синтаксис запроса и список используемых параметров (его можно найти на странице с описанием метода).");
+                break;
+            case 9:
+                Logger.info("Слишком много однотипных действий. Нужно сократить число однотипных обращений. Для более эффективной работы Вы можете использовать execute или JSONP.");
+                break;
+            case 10:
+                Logger.info("Произошла внутренняя ошибка сервера. Попробуйте повторить запрос позже.");
+                break;
+            case 11:
+                Logger.info("В тестовом режиме приложение должно быть выключено или пользователь должен быть залогинен. Выключите приложение в настройках vk.com/editapp?id={Ваш API_ID}");
+                break;
+            case 14:
+                Logger.info("Требуется ввод кода с картинки (Captcha). Процесс обработки этой ошибки подробно описан на отдельной странице.");
+                break;
+            case 15:
+                Logger.info("Доступ запрещён. Убедитесь, что Вы используете верные идентификаторы, и доступ к контенту для текущего пользователя есть в полной версии сайта.");
+                break;
+            case 16:
+                Logger.info("Требуется выполнение запросов по протоколу HTTPS, т.к. пользователь включил настройку, требующую работу через безопасное соединение. Чтобы избежать появления такой ошибки, в Standalone-приложении Вы можете предварительно проверять состояние этой настройки у пользователя методом account.getInfo.");
+                break;
+            case 17:
+                Logger.info("Требуется валидация пользователя. Убедитесь, что Вы не используете токен, полученный по схеме http://vk.com/dev/auth_mobile, для вызовов с сервера — это запрещено. Процесс валидации пользователя описан на отдельной странице.");
+                break;
+            case 20:
+                Logger.info(" Данное действие запрещено для не Standalone приложений. Если ошибка возникает несмотря на то, что Ваше приложение имеет тип Standalone, убедитесь, что при авторизации Вы используете redirect_uri=oauth.vk.com/blank.html. Подробнее см. vk.com/dev/auth_mobile.");
+                break;
+            case 21:
+                Logger.info("Данное действие разрешено только для Standalone и Open API приложений.");
+                break;
+            case 23:
+                Logger.info("Метод был выключен. Все актуальные методы ВК API, которые доступны в настоящий момент, перечислены здесь: vk.com/dev/methods.");
+                break;
+            case 24:
+                Logger.info("Требуется подтверждение со стороны пользователя. Процесс подтверждения действия пользователем описан на отдельной странице.");
+                break;
+            case 100:
+                Logger.info("Один из необходимых параметров был не передан или неверен. Проверьте список требуемых параметров и их формат на странице с описанием метода.");
+                break;
+            case 101:
+                Logger.info(" Неверный API ID приложения. Найдите приложение в списке администрируемых на странице http://vk.com/apps?act=settings и укажите в запросе верный API_ID (идентификатор приложения).");
+                break;
+            case 113:
+                Logger.info("Неверный идентификатор пользователя. Убедитесь, что Вы используете верный идентификатор. Получить ID по короткому имени можно методом utils.resolveScreenName.");
+                break;
+            case 150:
+                Logger.info("Неверный timestamp. Получить актуальное значение Вы можете методом utils.getServerTime.");
+                break;
+            case 200:
+                Logger.info("Доступ к альбому запрещён. Убедитесь, что Вы используете верные идентификаторы (для пользователей owner_id положительный, для сообществ — отрицательный), и доступ к запрашиваемому контенту для текущего пользователя есть в полной версии сайта.");
+                break;
+            case 201:
+                Logger.info("Доступ к аудио запрещён. Убедитесь, что Вы используете верные идентификаторы (для пользователей owner_id положительный, для сообществ — отрицательный), и доступ к запрашиваемому контенту для текущего пользователя есть в полной версии сайта.");
+                break;
+            case 203:
+                Logger.info("Доступ к группе запрещён. Убедитесь, что текущий пользователь является участником или руководителем сообщества (для закрытых и частных групп и встреч).");
+                break;
+            case 300:
+                Logger.info("Альбом переполнен. Перед продолжением работы нужно удалить лишние объекты из альбома или использовать другой альбом.");
+                break;
+            case 500:
+                Logger.info(" Действие запрещено. Вы должны включить переводы голосов в настройках приложения. Проверьте настройки приложения: vk.com/editapp?id={Ваш API_ID}&section=payments");
+                break;
+            case 600:
+                Logger.info("Нет прав на выполнение данных операций с рекламным кабинетом.");
+                break;
+            case 603:
+                Logger.info(" Произошла ошибка при работе с рекламным кабинетом.");
+                break;
+            default:
+                Logger.info("ошибка с не обрабатываемым кодом. ");
+                return true;
+        }
+        return false;
+
     }
+
 
     private void appendFields(StringBuilder builder) {
         if (errorReason != null)

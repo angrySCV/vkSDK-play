@@ -22,11 +22,7 @@
 package vk.model;
 
 
-
-
 import com.fasterxml.jackson.databind.JsonNode;
-import vk.VKApi;
-import vk.VKApiConst;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -77,101 +73,33 @@ public class VKList<T extends VKApiModel & Identifiable> extends VKApiModel impl
     /**
      * Creates list and fills it according with data in {@code from}.
      * @param from an object that represents a list adopted in accordance with VK API format. You can use null.
-     * @param clazz class represents a model that has a public constructor with {@link org.json.JsonNode} argument.
+     * @param clazz class represents a model that has a public constructor with {} argument.
      */
     public VKList(JsonNode from, Class<? extends T> clazz) {
         fill(from, clazz);
     }
 
-    /**
-     * Creates list and fills it according with data in {@code from}.
-     * @param from an array of items in the list. You can use null.
-     * @param clazz class represents a model that has a public constructor with {@link org.json.JsonNode} argument.
-     */
-    public VKList(JsonNode from, Class<? extends T> clazz) {
-        fill(from, clazz);
-    }
 
-    /**
-     * Creates list and fills it according with data in {@code from}.
-     * @param from an object that represents a list adopted in accordance with VK API format. You can use null.
-     * @param creator interface implementation to parse objects.
-     */
-    public VKList(JsonNode from, Parser<T> creator) {
-
-        fill(from, creator);
-    }
-
-    /**
-     * Creates list and fills it according with data in {@code from}.
-     * @param from an array of items in the list. You can use null.
-     * @param creator interface implementation to parse objects.
-     */
-    public VKList(JsonNode from, Parser<T> creator) {
-
-        fill(from, creator);
-    }
 
     /**
      * Fills list according with data in {@code from}.
      * @param from an object that represents a list adopted in accordance with VK API format. You can use null.
-     * @param clazz class represents a model that has a public constructor with {@link org.json.JsonNode} argument.
+     * @param clazz class represents a model that has a public constructor with {} argument.
      */
     public void fill(JsonNode from, Class<? extends T> clazz) {
         if (from.has("response")) {
             JsonNode array = from.get("response");
             if (array != null) {
-                fill(array, clazz);
+//                fill(array, clazz);
             }
             else {
-                fill(from.get("response"), clazz);
+//                fill(from.get("response"), clazz);
             }
         } else {
-            fill(from, new ReflectParser<T>(clazz));
+//            fill(from, new ReflectParser<T>(clazz));
         }
     }
 
-    /**
-     * Creates list and fills it according with data in {@code from}.
-     * @param from an array of items in the list. You can use null.
-     * @param clazz class represents a model that has a public constructor with {@link org.json.JsonNode} argument.
-     */
-    public void fill(JsonNode from, Class<? extends T> clazz) {
-        fill(from, new ReflectParser<T>(clazz));
-    }
-
-    /**
-     * Fills list according with data in {@code from}.
-     * @param from an object that represents a list adopted in accordance with VK API format. You can use null.
-     * @param creator interface implementation to parse objects.
-     */
-    public void fill(JsonNode from, Parser<? extends T> creator) {
-        if(from != null) {
-            fill(from.get("items"), creator);
-            count = from.get("count").asInt();
-        }
-    }
-
-    /**
-     * Fills list according with data in {@code from}.
-     * @param from an array of items in the list. You can use null.
-     * @param creator interface implementation to parse objects.
-     */
-    public void fill(JsonNode from, Parser<? extends T> creator) {
-        if(from != null) {
-            for(int i = 0; i < from.size(); i++) {
-                try {
-                    T object = creator.parseObject(from.get(i));
-                    if(object != null) {
-                        items.add(object);
-                    }
-                } catch (Exception e) {
-                    if (VKApiConst.DEBUG)
-                        e.printStackTrace();
-                }
-            }
-        }
-    }
 
     /**
      * Adds the element before the element with the specified id.
@@ -389,13 +317,13 @@ public class VKList<T extends VKApiModel & Identifiable> extends VKApiModel impl
 
 
     /**
-     * Used when parsing the list objects as interator created from {@link org.json.JsonNode} a instances of items of the list.
+     * Used when parsing the list objects as interator created from {} a instances of items of the list.
      * @param <D> list item type.
      */
     public static interface Parser<D> {
 
         /**
-         * Creates a list item of its representation return VK API from {@link org.json.JsonNode}
+         * Creates a list item of its representation return VK API from {}
          * @param source representation of the object in the format returned by VK API.
          * @return created element to add to the list.
          * @throws Exception if the exception is thrown, the element iterated this method will not be added to the list.
@@ -405,7 +333,7 @@ public class VKList<T extends VKApiModel & Identifiable> extends VKApiModel impl
 
     /**
      * Parser list items using reflection mechanism.
-     * To use an object class must have a public constructor that accepts {@link org.json.JsonNode}.
+     * To use an object class must have a public constructor that accepts {}.
      * If, during the creation of the object constructor will throw any exception, the element will not be added to the list.
      * @param <D> list item type.
      */
@@ -429,12 +357,13 @@ public class VKList<T extends VKApiModel & Identifiable> extends VKApiModel impl
 		        //Ignored. Try default constructor
 	        }
 
-	        return (D) clazz.newInstance().parse(source);
+	        return (D) clazz.newInstance();
         }
     }
 
-    @Override
-    public VKApiModel parse(JsonNode response)  {
-        throw new JSONException("Operation is not supported while class is generic");
+//    public void parse(JsonNode response)  {
+    public VKApiModel parse(JsonNode response) {
+//        throw new JSONException("Operation is not supported while class is generic");
+        return new VKApiUser();
     }
 }
