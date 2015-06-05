@@ -8,6 +8,7 @@ import java.util.Map;
 
 /**
  * Builds requests for API.audio part
+ * Created by angrySCV on 01.06.15.
  */
 public class VKApiAudio  {
     /*

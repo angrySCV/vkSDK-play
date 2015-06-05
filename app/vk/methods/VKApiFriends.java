@@ -7,7 +7,7 @@ import vk.VKApiConst;
 
 /**
  * Section friends
- * Created by alex_xpert on 29.01.14.
+ * Created by angrySCV on 01.06.15.
  */
 public class VKApiFriends {
 

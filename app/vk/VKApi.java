@@ -25,7 +25,8 @@ import vk.methods.*;
 
 /**
  *  TODO сделать ко всем методам API возможность добавление дополнительных параметров типа Map<String, String> params
- Provides access for API parts.
+ * Provides access for API parts.
+ * based on android SDK from VK.com
  */
 public class VKApi {
     /**
